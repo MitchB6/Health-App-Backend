@@ -1,9 +1,10 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 import os
 from dotenv import load_dotenv
-from .models import *
+from .models import db
 from .routes import main
 from sqlalchemy.ext.automap import automap_base
 
@@ -15,20 +16,19 @@ def create_app(config_name='default'):
     
     # Load config from
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-    app.config['JWT_SECRET_KET'] = os.getenv('SECRET_KEY')
+    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Extensions
     jwt = JWTManager(app)
     bcrypt = Bcrypt(app)
-
-    init_app(app)
+    db.init_app(app)
+    CORS(app)
     
     # Reflect existing tables
     with app.app_context():
         Base = automap_base()
-
-        # Double tap to ensure tables modeled == tables of db
-        db.create_all()
+        Base.prepare(db.engine, reflect=True)
         
     app.register_blueprint(main)
         

@@ -1,6 +1,5 @@
-from .models import *
+from .models import Base, db
 from flask_bcrypt import check_password_hash
-from . import Base
 
 def authenticate_user(email, password):
     tables = Base.classes

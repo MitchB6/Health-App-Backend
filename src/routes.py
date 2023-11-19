@@ -1,12 +1,13 @@
-from flask import *
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token
 from .services import authenticate_user
+from flask import Flask, send_from_directory
 
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return "Welcome to our fitness app"
+    return send_from_directory(app.static_folder, 'index.html')
 
 @main.route('/health')
 def health_check():
