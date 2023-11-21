@@ -1,4 +1,6 @@
 from src import create_app
+from src.models import Member
+from src.extensions import db
 
 app = create_app()
 
@@ -6,7 +8,7 @@ app = create_app()
 def make_shell_context():
     return {
         "db":db,
-        "Members": Member
+        "Member": Member
     }
     
 if __name__ == '__main__':
