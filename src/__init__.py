@@ -1,35 +1,22 @@
 from flask import Flask
-from flask_jwt_extended import JWTManager
-from flask_bcrypt import Bcrypt
-from flask_cors import CORS
-import os
-from dotenv import load_dotenv
-from .models import db
-from .routes import main
-from sqlalchemy.ext.automap import automap_base
+from config import DevConfig,ProdConfig,TestConfig
+from .extensions import db,api
 
-# Load env from .env
-load_dotenv()
+#Set config here
+Config = DevConfig
 
-def create_app(config_name='default'):
+def create_app():
     app = Flask(__name__)
+    app.config.from_object(Config)
     
-    # Load config from
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
-    # Extensions
-    jwt = JWTManager(app)
-    bcrypt = Bcrypt(app)
     db.init_app(app)
-    CORS(app)
+    api.init_app(app)
     
-    # Reflect existing tables
+    # Initialize database
     with app.app_context():
-        Base = automap_base()
-        Base.prepare(db.engine, reflect=True)
-        
-    app.register_blueprint(main)
-        
+        db.create_all()
+
+    # Register blueprints
+    from . import routes
+    
     return app

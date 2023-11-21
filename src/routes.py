@@ -1,31 +1,32 @@
-from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token
-from .services import authenticate_user
-from flask import Flask, send_from_directory
+from flask_restx import Resource
+from .extensions import api
+from .serializers import member_model
+from .models import Member
 
-main = Blueprint('main', __name__)
+@api.route('/members')
+class MembersResource(Resource):
+    @api.marshal_list_with(member_model)
+    def get(self):
+        """Get all members"""
+        members = Member.query.all()
 
-@main.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
-
-@main.route('/health')
-def health_check():
-    try:
-        return jsonify({'status': 'UP', 'message': 'Service is healthy'})
-    except Exception as e:
-        return jsonify({'status': 'DOWN', 'message': 'Service is not healthy'})
-
-@main.route('/login', methods=['POST'])
-def login():
-    # Get username and password from request
-    username = request.json.get('username')
-    password = request.json.get('password')
+        return members
     
-    # Authenticate
-    user = authenticate_user(username, password)
-    if user:
-        access_token = create_access_token(identity=username)
-        return jsonify(access_token=access_token), 200
-    else:
-        return jsonify({'message': 'Invalid username or password'}), 401
+    @api.marshal_with(member_model)
+    def post(self):
+        """Create a new member"""
+        pass
+
+@api.route('/recipe/<int:id>')
+class MemberResource(Resource):
+    def get(self,id):
+        """Get a member by id"""
+        pass
+    
+    def put(self,id):
+        """Update a member by id"""
+        pass
+    
+    def delete(self,id):
+        """Delete a member by id"""
+        pass
