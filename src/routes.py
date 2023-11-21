@@ -3,6 +3,12 @@ from .extensions import api
 from .serializers import member_model
 from .models import Member
 
+@api.route('/health')
+class HealthResource(Resource):
+  def get(self):
+    """Health check of backend"""
+    return {'status': 'success', 'message': 'Health check success'}
+    
 @api.route('/members')
 class MembersResource(Resource):
     @api.marshal_list_with(member_model)
@@ -17,7 +23,7 @@ class MembersResource(Resource):
         """Create a new member"""
         pass
 
-@api.route('/recipe/<int:id>')
+@api.route('/members/<int:id>')
 class MemberResource(Resource):
     def get(self,id):
         """Get a member by id"""

@@ -1,0 +1,10 @@
+flask
+flask_sqlalchemy
+flask_jwt_extended
+python-decouple
+python-dotenv
+pymysql
+
+configure a .env with
+MYSQL_DATABASE_URI='mysql+pymysql://<username>:<password>@<host>:<port>/<database>'
+SECRET_KEY='YOUR SECRET KEY'
