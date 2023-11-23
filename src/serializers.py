@@ -19,3 +19,15 @@ member_model = api.model(
         "weight": fields.Integer(description="Member's weight in kilograms")
     }
 )
+
+password_model = api.model(
+    "Password",
+    {
+        "pw_member_id": fields.Integer(description="Member ID associated with the password"),
+        "hashed_pw": fields.String(required=True, description="Hashed password"),
+        "created_at": fields.DateTime(dt_format='rfc822', description="Creation date of the password"),
+        "updated_at": fields.DateTime(dt_format='rfc822', description="Last update date of the password"),
+        "password_reset_token": fields.String(description="Password reset token"),
+        "password_reset_expiration": fields.DateTime(dt_format='rfc822', description="Expiration date for the password reset token")
+    }
+)

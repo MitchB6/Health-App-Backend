@@ -7,50 +7,50 @@ class Member(db.Model):
   __tablename__ = 'members'
   
   member_id = db.Column(db.Integer, primary_key=True)
-  first_name = db.Column(db.String(100), nullable=False)
-  last_name = db.Column(db.String(100), nullable=False)
+  first_name = db.Column(db.String(100), nullable=True)
+  last_name = db.Column(db.String(100), nullable=True)
   email = db.Column(db.String(255), nullable=False, unique=True)
   phone = db.Column(db.String(20), nullable=True)
   is_coach = db.Column(db.Boolean, nullable=False, default=False)
   city = db.Column(db.String(100), nullable=True)
   state = db.Column(db.String(100), nullable=True)
   zip_code = db.Column(db.String(20), nullable=True)
-  join_date = db.Column(db.DateTime, nullable=False)
+  join_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   birthdate = db.Column(db.Date, nullable=True)
   height = db.Column(db.Integer, nullable=True)  
   weight = db.Column(db.Integer, nullable=True)  
 
   passwords = relationship('Password', back_populates='member', uselist=False)
-  member_goals = relationship('MemberGoal', back_populates='member')
-  member_progress = relationship('MemberProgress', back_populates='member')
-  coaches = relationship('CoachInfo', secondary='coaches_members_link', back_populates='members')
-  goals = relationship('MemberGoals', back_populates='member', order_by='MemberGoals.target_date')
-  workouts = relationship('Workout', back_populates='member', order_by='Workout.workout_date')
-  workout_plans = relationship('WorkoutPlan', back_populates='member', order_by='WorkoutPlan.start_date')
+  coaches = relationship('CoachInfo', secondary='coaches_members_link', back_populates='member')
+  coach_info = relationship('CoachInfo', back_populates='member')
+  goals = relationship('MemberGoals', back_populates='member')
+  workouts = relationship('Workout', back_populates='member')
+  workout_plans = relationship('WorkoutPlan', back_populates='member')
     
   def __repr__(self):
     return f"<Member {self.first_name} {self.last_name}>"
 
-  def save(self):
+  def save(self, flush=False):
     db.session.add(self)
+    if flush:
+      db.session.flush()
+
+  def commit(self):
     db.session.commit()
 
   def delete(self):
     db.session.delete(self)
-    db.session.commit()
-      
+
   def update(self, first_name, last_name, email):
     self.first_name = first_name
     self.last_name = last_name
     self.email = email
     db.session.commit()
-    
-  """Indexing"""
 
 class Password(db.Model):
   __tablename__ = 'passwords'
   
-  pw_member_id = db.Column(db.Integer, ForeignKey('members.member_id'), primary_key=True)
+  member_id = db.Column(db.Integer, ForeignKey('members.member_id'), primary_key=True)
   hashed_pw = db.Column(db.String(255), nullable=False)
   created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -59,7 +59,16 @@ class Password(db.Model):
 
   member = relationship("Member", back_populates="passwords")
   
-  """Encapsulation methods and Indexing"""
+  def __init__(self, **kwargs):
+    super().__init__(**kwargs)
+    
+  def save(self):
+    db.session.add(self)
+    db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
 
 class Exercise(db.Model):
   __tablename__ = 'exercises'
@@ -69,7 +78,7 @@ class Exercise(db.Model):
   description = db.Column(db.Text, nullable=True)
   muscle_group = db.Column(db.String(255), nullable=True)
 
-  exercise_stats = db.relationship('ExerciseStat', back_populates='exercise')
+  stats = db.relationship('ExerciseStat', back_populates='exercise')
   workout_exercises = db.relationship('WorkoutExercise', back_populates='exercise')
   
   """Encapsulation methods and Indexing"""
@@ -78,7 +87,7 @@ class CoachInfo(db.Model):
   __tablename__ = 'coach_info'
   
   coach_id = db.Column(db.Integer, primary_key=True)
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
+  member_id = db.Column(db.Integer, ForeignKey('members.member_id'), nullable=False)
   email = db.Column(db.String(255), nullable=False)
   phone = db.Column(db.String(20))
   specialization = db.Column(db.Text)
@@ -171,7 +180,6 @@ class ExerciseStat(db.Model):
   recorded_at = db.Column(db.DateTime, server_default=db.func.now())
 
   exercise = relationship('Exercise', back_populates='stats')
-  exercise_stats = relationship('Exercise', back_populates='exercise_stats')
 
   """Encapsulation methods"""
 
