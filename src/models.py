@@ -29,9 +29,11 @@ class Member(db.Model):
   workout_plans = relationship('WorkoutPlan', back_populates='member')
     
   def __repr__(self):
+    """String representation of a Member instance."""
     return f"<Member {self.first_name} {self.last_name}>"
 
   def save(self, flush=False, commit=False):
+    """Saves the Member instance. Use 'flush' to get member_id without committing"""
     db.session.add(self)
     if flush:
       db.session.flush()
@@ -39,10 +41,12 @@ class Member(db.Model):
       db.session.commit()
     
   def delete(self):
+    """Deletes the Member instance from the DB."""
     db.session.delete(self)
     db.session.commit()
 
   def update(self, **kwargs):
+    """Updates Member attributes specified in 'kwargs'."""
     for key, value in kwargs.items():
       if hasattr(self, key) and value is not None:
         setattr(self, key, value)
@@ -61,13 +65,16 @@ class Password(db.Model):
   member = relationship("Member", back_populates="passwords")
   
   def __init__(self, **kwargs):
+    """Initialize a Password instance."""
     super().__init__(**kwargs)
     
   def save(self):
+    """Saves the Password instance to the DB."""
     db.session.add(self)
     db.session.commit()
 
   def delete(self):
+    """Deletes the Password instance from the DB."""
     db.session.delete(self)
     db.session.commit()
 
@@ -82,7 +89,36 @@ class Exercise(db.Model):
   stats = db.relationship('ExerciseStat', back_populates='exercise')
   workout_exercises = db.relationship('WorkoutExercise', back_populates='exercise')
   
-  """Encapsulation methods and Indexing"""
+  def save(self):
+    """Saves the exercise to the database."""
+    db.session.add(self)
+    db.session.commit()
+
+  def delete(self):
+    """Deletes the exercise from the database."""
+    db.session.delete(self)
+    db.session.commit()
+
+  def update(self, **kwargs):
+    """Updates exercise attributes with given keyword arguments."""
+    for key, value in kwargs.items():
+      if hasattr(self, key) and value is not None:
+        setattr(self, key, value)
+    db.session.commit()
+  @classmethod
+  def find_by_name(cls, name):
+    """Finds an exercise by its name."""
+    return cls.query.filter_by(name=name).first()
+
+  @classmethod
+  def all_exercises(cls):
+    """Returns all exercises."""
+    return cls.query.all()
+
+  @classmethod
+  def exercises_by_muscle_group(cls, muscle_group):
+    """Returns exercises for a specific muscle group."""
+    return cls.query.filter_by(muscle_group=muscle_group).all()
    
 class CoachInfo(db.Model):
   __tablename__ = 'coach_info'
@@ -101,7 +137,30 @@ class CoachInfo(db.Model):
   member_coach_link = relationship('Member', secondary='coaches_members_link', back_populates='coaches')
   availabilities = relationship('Availability', back_populates='coach_info', order_by='Availability.start_time')
   
-  """Encapsulation methods and Indexing"""
+  def save(self, flush=False, commit=False):
+    """Saves coach information to the database."""
+    db.session.add(self)
+    if flush:
+      db.session.flush()
+    if commit:
+      db.session.commit()
+
+  def delete(self):
+    """Deletes coach information from the database."""
+    db.session.delete(self)
+    db.session.commit()
+
+  def update(self, **kwargs):
+    """Updates coach attributes with given keyword arguments."""
+    for key, value in kwargs.items():
+      if hasattr(self, key) and value is not None:
+        setattr(self, key, value)
+    db.session.commit()
+    
+    @classmethod
+    def all_coaches(cls):
+      """Returns all registered coaches."""
+      return cls.query.all()
 
 class CoachesMembersLink(db.Model):
   __tablename__ = 'coaches_members_link'
@@ -110,7 +169,38 @@ class CoachesMembersLink(db.Model):
   coach_id = db.Column(db.Integer, db.ForeignKey('coach_info.coach_id'), nullable=False)
   member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
   
-  """Indexing"""
+  @classmethod
+  def create_link(cls, coach_id, member_id):
+    """Add new link if DNE"""
+    existing_link = cls.query.filter_by(coach_id=coach_id, member_id=member_id).first()
+    if not existing_link:
+      new_link = cls(coach_id=coach_id, member_id=member_id)
+      db.session.add(new_link)
+      db.session.commit()
+      return new_link
+    return existing_link  # or handle this case as needed
+  
+  @classmethod
+  def remove_link(cls, coach_id, member_id):
+    """Remove link if exists"""
+    link_to_remove = cls.query.filter_by(coach_id=coach_id, member_id=member_id).first()
+    if link_to_remove:
+      db.session.delete(link_to_remove)
+      db.session.commit()
+
+  @classmethod
+  def find_coaches_by_member(cls, member_id):
+    """Find coaches for specific member"""
+    links = cls.query.filter_by(member_id=member_id).all()
+    coach_ids = [link.coach_id for link in links]
+    return CoachInfo.query.filter(CoachInfo.coach_id.in_(coach_ids)).all()
+
+  @classmethod
+  def find_members_by_coach(cls, coach_id):
+    """Find members for specific coach"""
+    links = cls.query.filter_by(coach_id=coach_id).all()
+    member_ids = [link.member_id for link in links]
+    return Member.query.filter(Member.member_id.in_(member_ids)).all()
 
 class Availability(db.Model):
   __tablename__ = 'availability'
@@ -122,8 +212,32 @@ class Availability(db.Model):
 
   coach_info = relationship('CoachInfo', back_populates='availabilities')
   
-  """Encapsulation methods and Indexing"""
+  def save(self):
+    """Save or update availability."""
+    self.check_availability_overlap()
+    db.session.add(self)
+    db.session.commit()
 
+  def delete(self):
+    """Delete availability."""
+    db.session.delete(self)
+    db.session.commit()
+  
+  @classmethod
+  def find_by_coach(cls, coach_id):
+    """Find all availabilities for a specific coach."""
+    return cls.query.filter_by(coach_id=coach_id).all()
+
+  def check_availability_overlap(self):
+    """Check for overlapping availability."""
+    overlapping = Availability.query.filter(
+      Availability.coach_id == self.coach_id,
+      Availability.start_time < self.end_time,
+      Availability.end_time > self.start_time
+    ).first()
+    if overlapping and overlapping.availability_id != self.availability_id:
+      raise ValueError("This time slot overlaps with an existing availability.")
+          
 class MemberGoals(db.Model):
   __tablename__ = 'member_goals'
 
@@ -135,7 +249,26 @@ class MemberGoals(db.Model):
 
   member = relationship('Member', back_populates='goals')
   
-  """Encapsulation methods and Indexing"""
+  def save(self, commit=True):
+    """Save or update a member goal."""
+    db.session.add(self)
+    if commit:
+      db.session.commit()
+
+  def delete(self):
+    """Delete a member goal."""
+    db.session.delete(self)
+    db.session.commit()
+
+  @classmethod
+  def find_by_member(cls, member_id):
+    """Find all goals for a specific member."""
+    return cls.query.filter_by(member_id=member_id).all()
+
+  @property
+  def is_goal_deadline_passed(self):
+    """Check if the goal deadline has passed."""
+    return self.target_date < datetime.date.today()
     
 class Workout(db.Model):
   __tablename__ = 'workouts'
@@ -152,8 +285,37 @@ class Workout(db.Model):
   workout_stats = relationship('WorkoutStat', back_populates='workout', order_by='WorkoutStat.date')
   workout_exercises = relationship('WorkoutExercise', back_populates='workout')
 
-  """Encapsulation methods and Indexing"""
-  
+  def save(self, commit=True):
+    """Save or update a workout."""
+    db.session.add(self)
+    if commit:
+      db.session.commit()
+      
+  def delete(self):
+        """Delete a workout."""
+        db.session.delete(self)
+        db.session.commit()
+
+  @classmethod
+  def find_by_member(cls, member_id):
+    """Find all workouts for a specific member."""
+    return cls.query.filter_by(member_id=member_id).all()
+
+  def link_to_workout_plan(self, plan_id, sequence, commit=True):
+    """Link workout to a workout plan."""
+    link = WorkoutPlanLink(workout_id=self.workout_id, plan_id=plan_id, sequence=sequence)
+    db.session.add(link)
+    if commit:
+      db.session.commit()
+
+  def unlink_from_workout_plan(self, plan_id, commit=True):
+    """Unlink workout from a workout plan."""
+    link = WorkoutPlanLink.query.filter_by(workout_id=self.workout_id, plan_id=plan_id).first()
+    if link:
+      db.session.delete(link)
+      if commit:
+        db.session.commit()
+
 class WorkoutPlan(db.Model):
   __tablename__ = 'workout_plans'
 
@@ -167,7 +329,35 @@ class WorkoutPlan(db.Model):
   member = relationship('Member', back_populates='workout_plans')
   workout_plan_links = relationship('WorkoutPlanLink', back_populates='workout_plan', order_by='WorkoutPlanLink.sequence')
 
-  """Encapsulation methods and Indexing"""
+  def save(self, commit=True):
+    """Save or update a workout plan."""
+    db.session.add(self)
+    if commit:
+      db.session.commit()
+
+    def delete(self):
+      """Delete a workout plan."""
+      db.session.delete(self)
+      db.session.commit()
+
+    def link_workout(self, workout_id, sequence, commit=True):
+      """Link a workout to this workout plan."""
+      link = WorkoutPlanLink(plan_id=self.plan_id, workout_id=workout_id, sequence=sequence)
+      db.session.add(link)
+      if commit:
+        db.session.commit()
+
+    def unlink_workout(self, workout_id, commit=True):
+      """Unlink a workout from this workout plan."""
+      link = WorkoutPlanLink.query.filter_by(plan_id=self.plan_id, workout_id=workout_id).first()
+      if link:
+        db.session.delete(link)
+        if commit:
+          db.session.commit()
+
+    def get_workouts(self):
+      """Retrieve all workouts linked to this workout plan."""
+      return [link.workout for link in self.workout_plan_links]
 
 class ExerciseStat(db.Model):
   __tablename__ = 'exercise_stats'
@@ -182,7 +372,32 @@ class ExerciseStat(db.Model):
 
   exercise = relationship('Exercise', back_populates='stats')
 
-  """Encapsulation methods"""
+  def save(self):
+    """Saves exercise stat to the database."""
+    db.session.add(self)
+    db.session.commit()
+        
+  def delete(self):
+    """Deletes exercise stat from the database."""
+    db.session.delete(self)
+    db.session.commit()
+
+  def update(self, **kwargs):
+      """Updates exercise stats with given keyword arguments."""
+      for key, value in kwargs.items():
+          if hasattr(self, key) and value is not None:
+              setattr(self, key, value)
+      db.session.commit()
+
+  @classmethod
+  def find_by_exercise_id(cls, exercise_id):
+      """Finds exercise stats by exercise ID."""
+      return cls.query.filter_by(exercise_id=exercise_id).all()
+
+  @classmethod
+  def find_by_stat_id(cls, recorded_at):
+      """Finds a specific exercise stat by its ID."""
+      return cls.query.get(recorded_at)
 
 class WorkoutPlanLink(db.Model):
   __tablename__ = 'workout_plan_links'
@@ -195,7 +410,31 @@ class WorkoutPlanLink(db.Model):
   workout_plan = relationship('WorkoutPlan', back_populates='workout_plan_links')
   workout = relationship('Workout', back_populates='workout_plan_links')
 
-  """Encapsulation methods and Indexing"""
+  def save(self, commit=False):
+    """Saves a workout plan link to the database."""
+    db.session.add(self)
+    if commit:
+      db.session.commit()
+
+    def delete(self):
+      """Deletes a workout plan link from the database."""
+      db.session.delete(self)
+      db.session.commit()
+
+    @classmethod
+    def find_by_plan_id(cls, plan_id):
+      """Finds all workout plan links for a given plan ID."""
+      return cls.query.filter_by(plan_id=plan_id).all()
+
+    @classmethod
+    def find_by_workout_id(cls, workout_id):
+      """Finds all workout plan links for a given workout ID."""
+      return cls.query.filter_by(workout_id=workout_id).all()
+
+    @classmethod
+    def find_link(cls, plan_id, workout_id):
+      """Finds a specific link between a workout plan and a workout."""
+      return cls.query.filter_by(plan_id=plan_id, workout_id=workout_id).first()
   
 class WorkoutStat(db.Model):
   __tablename__ = 'workout_stats'
@@ -208,7 +447,26 @@ class WorkoutStat(db.Model):
 
   workout = relationship('Workout', back_populates='workout_stats')
   
-  """Encapsulation methods"""
+  def save(self, commit=False):
+    """Saves a workout statistic to the database."""
+    db.session.add(self)
+    if commit:
+      db.session.commit()
+
+    def delete(self):
+      """Deletes a workout statistic from the database."""
+      db.session.delete(self)
+      db.session.commit()
+
+    @classmethod
+    def find_by_workout_id(cls, workout_id):
+      """Finds all stats for a given workout ID."""
+      return cls.query.filter_by(workout_id=workout_id).all()
+
+    @classmethod
+    def find_stat(cls, stat_id):
+      """Finds a specific workout stat by its ID."""
+      return cls.query.get(stat_id)
   
 class WorkoutExercise(db.Model):
   __tablename__ = 'workout_exercises'
@@ -223,4 +481,23 @@ class WorkoutExercise(db.Model):
   workout = relationship('Workout', back_populates='workout_exercises')
   exercise = relationship('Exercise', back_populates='workout_exercises')
   
-  """Encapsulation methods"""
+  def save(self, commit=False):
+    """Saves a workout exercise record to the database."""
+    db.session.add(self)
+    if commit:
+        db.session.commit()
+
+  def delete(self):
+    """Deletes a workout exercise record from the database."""
+    db.session.delete(self)
+    db.session.commit()
+
+  @classmethod
+  def find_by_workout_id(cls, workout_id):
+    """Finds all exercises for a given workout ID."""
+    return cls.query.filter_by(workout_id=workout_id).all()
+
+  @classmethod
+  def find_by_exercise_id(cls, exercise_id):
+    """Finds all workouts for a given exercise ID."""
+    return cls.query.filter_by(exercise_id=exercise_id).all()
