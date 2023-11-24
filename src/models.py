@@ -1,7 +1,8 @@
-from .extensions import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from .extensions import db
 
 class Member(db.Model):
   __tablename__ = 'members'
@@ -30,21 +31,21 @@ class Member(db.Model):
   def __repr__(self):
     return f"<Member {self.first_name} {self.last_name}>"
 
-  def save(self, flush=False):
+  def save(self, flush=False, commit=False):
     db.session.add(self)
     if flush:
       db.session.flush()
-
-  def commit(self):
-    db.session.commit()
-
+    if commit:
+      db.session.commit()
+    
   def delete(self):
     db.session.delete(self)
+    db.session.commit()
 
-  def update(self, first_name, last_name, email):
-    self.first_name = first_name
-    self.last_name = last_name
-    self.email = email
+  def update(self, **kwargs):
+    for key, value in kwargs.items():
+      if hasattr(self, key) and value is not None:
+        setattr(self, key, value)
     db.session.commit()
 
 class Password(db.Model):

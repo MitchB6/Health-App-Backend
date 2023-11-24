@@ -1,7 +1,12 @@
-from .extensions import api
-from flask_restx import fields
+from flask_restx import Namespace,fields
 
-member_model = api.model(
+from .extensions import api
+
+
+member_ns=Namespace('member',description='A namespace for Member')
+auth_ns=Namespace('auth',description="A namespace for our Authentication")
+
+member_model = member_ns.model(
     "Member",
     {
         "member_id": fields.Integer(description="The unique identifier of a member"),
@@ -20,14 +25,25 @@ member_model = api.model(
     }
 )
 
-password_model = api.model(
-    "Password",
+signup_model=api.model(
+    "SignUp",
     {
-        "pw_member_id": fields.Integer(description="Member ID associated with the password"),
-        "hashed_pw": fields.String(required=True, description="Hashed password"),
-        "created_at": fields.DateTime(dt_format='rfc822', description="Creation date of the password"),
-        "updated_at": fields.DateTime(dt_format='rfc822', description="Last update date of the password"),
-        "password_reset_token": fields.String(description="Password reset token"),
-        "password_reset_expiration": fields.DateTime(dt_format='rfc822', description="Expiration date for the password reset token")
+        "email":fields.String,
+        "password":fields.String()
+    }
+)
+
+workout_model=api.model(
+    "Workout",
+    {
+        "name":fields.String()
+    }
+)
+
+login_model=api.model(
+    "Login",
+    {
+        "email":fields.String(),
+        "password":fields.String()
     }
 )

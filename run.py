@@ -1,15 +1,7 @@
 from src import create_app
-from src.models import Member
-from src.extensions import db
+from config import DevConfig,ProdConfig,TestConfig
 
-app = create_app()
+app=create_app(DevConfig)
 
-@app.shell_context_processor
-def make_shell_context():
-    return {
-        "db":db,
-        "Member": Member
-    }
-    
 if __name__ == '__main__':
     app.run()
