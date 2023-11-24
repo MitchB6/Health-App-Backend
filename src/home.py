@@ -1,15 +1,15 @@
 from flask import jsonify
 from flask_restx import Resource
 
-from .extensions import api
+from .serializers import home_ns
 
-@api.route('/')
+@home_ns.route('/')
 class HomeResource(Resource):
     def get(self):
         """Homepage"""
-        return jsonify(message="hello world")
+        return jsonify({"message":"hello world"})
 
-@api.route('/health')
+@home_ns.route('/health')
 class HealthResource(Resource):
   def get(self):
     """Health check of backend"""

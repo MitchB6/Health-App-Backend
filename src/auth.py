@@ -1,6 +1,6 @@
 from flask import jsonify,request,make_response
 from flask_restx import Resource
-from flask_jwt_extended import (JWTManager, create_access_token,
+from flask_jwt_extended import (create_access_token,
 create_refresh_token,jwt_required,get_jwt_identity)
 
 from .extensions import bcrypt
@@ -39,7 +39,6 @@ class Login(Resource):
         """User login using email and password"""
         data=request.get_json()
         
-
         email=data.get('email')
 
         password=data.get('password')
@@ -67,7 +66,6 @@ class Login(Resource):
                 return jsonify({"message":"Invalid credentials"}), 401
         else:
             return jsonify({"message": "User not found"}), 404
-
 
 @auth_ns.route('/refresh')
 class RefreshResource(Resource):
