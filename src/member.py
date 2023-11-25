@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required
 from .models import Member
 from .serializers import member_model, member_ns
 
-@member_ns.route('/member/<int:id>')
+@member_ns.route('/<int:id>')
 class MemberResource(Resource):
     @member_ns.marshal_with(member_model)
     def get(self,id):

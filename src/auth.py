@@ -2,10 +2,12 @@ from flask import jsonify,request,make_response
 from flask_restx import Resource
 from flask_jwt_extended import (create_access_token,
 create_refresh_token,jwt_required,get_jwt_identity)
+from flask_bcrypt import Bcrypt
 
-from .extensions import bcrypt
 from .serializers import signup_model,login_model,auth_ns
 from .models import Member,Password
+
+bcrypt=Bcrypt()
 
 @auth_ns.route('/signup')
 class SignUp(Resource):
@@ -42,14 +44,14 @@ class Login(Resource):
         email=data.get('email')
 
         password=data.get('password')
-        print("Line47")
+
         db_user=Member.query.filter_by(email=email).first()
-        print("Line49")
+
         if db_user:
             db_password = db_user.passwords
-            print("Line52")
+
             if db_user and bcrypt.check_password_hash(db_password.hashed_pw, password):
-                print("Line54")                
+                """JWT_ACCESS_TOKEN_EXPIRES default(15 minutes)"""         
                 access_token=create_access_token(identity=db_user.member_id)
                 refresh_token=create_refresh_token(identity=db_user.member_id)
                 

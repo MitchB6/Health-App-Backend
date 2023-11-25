@@ -1,14 +1,12 @@
 from flask import Flask,jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from flask_restx import Resource
 
 from .extensions import db,api,migrate
 from .models import Member,Password
 from .member import member_ns
 from .auth import auth_ns
 from .home import home_ns
-from .serializers import root_ns
 
 def create_app(config):
     app = Flask(__name__)
@@ -36,7 +34,6 @@ def create_app(config):
     api.add_namespace(member_ns)
     api.add_namespace(auth_ns)
     api.add_namespace(home_ns)
-    api.add_namespace(root_ns)
     
     @app.shell_context_processor
     def make_shell_context():
