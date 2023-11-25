@@ -4,7 +4,7 @@ from .extensions import api
 
 home_ns=Namespace('home',description='A namespace for Home')
 member_ns=Namespace('member',description='A namespace for Member')
-auth_ns=Namespace('auth',description="A namespace for our Authentication")
+auth_ns=Namespace('auth',description="A namespace for Authentication")
 
 member_model = member_ns.model(
     "Member",

@@ -4,6 +4,8 @@ from datetime import datetime
 
 from .extensions import db
 
+# The `Member` class represents a member in a database, with various attributes and relationships to
+# other tables.
 class Member(db.Model):
   __tablename__ = 'members'
   
@@ -27,7 +29,7 @@ class Member(db.Model):
   goals = relationship('MemberGoals', back_populates='member')
   workouts = relationship('Workout', back_populates='member')
   workout_plans = relationship('WorkoutPlan', back_populates='member')
-    
+  
   def __repr__(self):
     """String representation of a Member instance."""
     return f"<Member {self.first_name} {self.last_name}>"
@@ -52,6 +54,9 @@ class Member(db.Model):
         setattr(self, key, value)
     db.session.commit()
 
+# The `Password` class represents a table in a database that stores password information for members,
+# including hashed passwords, creation and update timestamps, password reset tokens, and expiration
+# dates.
 class Password(db.Model):
   __tablename__ = 'passwords'
   
@@ -78,6 +83,8 @@ class Password(db.Model):
     db.session.delete(self)
     db.session.commit()
 
+# The `Exercise` class represents an exercise in a fitness application and provides methods for
+# saving, deleting, updating, and retrieving exercises from a database.
 class Exercise(db.Model):
   __tablename__ = 'exercises'
 
@@ -120,6 +127,8 @@ class Exercise(db.Model):
     """Returns exercises for a specific muscle group."""
     return cls.query.filter_by(muscle_group=muscle_group).all()
    
+# The CoachInfo class represents coach information in a database and provides methods for saving,
+# deleting, updating, and retrieving coach data.
 class CoachInfo(db.Model):
   __tablename__ = 'coach_info'
   
@@ -162,6 +171,8 @@ class CoachInfo(db.Model):
       """Returns all registered coaches."""
       return cls.query.all()
 
+# The `CoachesMembersLink` class is a model that represents the link between coaches and members in a
+# database, providing methods to create, remove, and find links between them.
 class CoachesMembersLink(db.Model):
   __tablename__ = 'coaches_members_link'
 
@@ -202,6 +213,8 @@ class CoachesMembersLink(db.Model):
     member_ids = [link.member_id for link in links]
     return Member.query.filter(Member.member_id.in_(member_ids)).all()
 
+# The `Availability` class represents the availability of a coach and provides methods for saving,
+# deleting, and finding availabilities, as well as checking for overlapping availabilities.
 class Availability(db.Model):
   __tablename__ = 'availability'
 
@@ -238,6 +251,9 @@ class Availability(db.Model):
     if overlapping and overlapping.availability_id != self.availability_id:
       raise ValueError("This time slot overlaps with an existing availability.")
           
+# The `MemberGoals` class represents a table in a database that stores goals for members, with methods
+# for saving, deleting, and finding goals, as well as a property to check if a goal's deadline has
+# passed.
 class MemberGoals(db.Model):
   __tablename__ = 'member_goals'
 
@@ -270,6 +286,8 @@ class MemberGoals(db.Model):
     """Check if the goal deadline has passed."""
     return self.target_date < datetime.date.today()
     
+# The `Workout` class represents a workout entity in a database, with various attributes and methods
+# for saving, deleting, and linking workouts to workout plans.
 class Workout(db.Model):
   __tablename__ = 'workouts'
 
@@ -316,6 +334,8 @@ class Workout(db.Model):
       if commit:
         db.session.commit()
 
+# The `WorkoutPlan` class represents a workout plan in a database, with methods for saving, deleting,
+# linking and unlinking workouts, and retrieving linked workouts.
 class WorkoutPlan(db.Model):
   __tablename__ = 'workout_plans'
 
@@ -359,6 +379,8 @@ class WorkoutPlan(db.Model):
       """Retrieve all workouts linked to this workout plan."""
       return [link.workout for link in self.workout_plan_links]
 
+# The `ExerciseStat` class represents exercise statistics and provides methods for saving, deleting,
+# updating, and finding exercise stats in the database.
 class ExerciseStat(db.Model):
   __tablename__ = 'exercise_stats'
 
@@ -399,6 +421,8 @@ class ExerciseStat(db.Model):
       """Finds a specific exercise stat by its ID."""
       return cls.query.get(recorded_at)
 
+# The `WorkoutPlanLink` class represents a link between a workout plan and a workout in a database,
+# with methods for saving, deleting, and finding links.
 class WorkoutPlanLink(db.Model):
   __tablename__ = 'workout_plan_links'
 
@@ -436,6 +460,8 @@ class WorkoutPlanLink(db.Model):
       """Finds a specific link between a workout plan and a workout."""
       return cls.query.filter_by(plan_id=plan_id, workout_id=workout_id).first()
   
+# The `WorkoutStat` class represents a workout statistic and provides methods for saving, deleting,
+# and finding workout stats in the database.
 class WorkoutStat(db.Model):
   __tablename__ = 'workout_stats'
 
@@ -468,6 +494,8 @@ class WorkoutStat(db.Model):
       """Finds a specific workout stat by its ID."""
       return cls.query.get(stat_id)
   
+# The `WorkoutExercise` class represents a model for workout exercises in a database, with methods for
+# saving, deleting, and finding exercises by workout or exercise ID.
 class WorkoutExercise(db.Model):
   __tablename__ = 'workout_exercises'
 
