@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block title %}sign-up {% endblock %}
+
+{% block content %}
+<h1>Hello world</h1>
+<h3>collecting info</h3>
+<h3>about your goals</h3>
+
+<form method="POST">
+    <h3 align="center">sign-up</h3>
+    <div class="form-group">
+        <label for="exp">
+            Yes
+        </label>
+        <input 
+            type="radio"
+            value="Yes"
+            id="exp"
+            name="exp"/>
+    </div>
+    <div class="form-group">
+        <label for="exp">
+            No
+        </label>
+        <input 
+            type="radio"
+            value="No"
+            id="exp"
+            name="exp"/>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary"> Submit </button>
+
+</form>
+{% endblock %}
