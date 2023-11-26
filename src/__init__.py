@@ -30,6 +30,7 @@ def create_app(config):
     @app.errorhandler(404)
     def not_found(err):
         return jsonify({"message":"I dunno bro its not here"})
+    
     api.init_app(app)
     api.add_namespace(member_ns)
     api.add_namespace(auth_ns)
