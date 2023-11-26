@@ -8,20 +8,22 @@ from .extensions import db
 # other tables.
 class Member(db.Model):
   __tablename__ = 'members'
-  
+
   member_id = db.Column(db.Integer, primary_key=True)
   first_name = db.Column(db.String(100), nullable=True)
   last_name = db.Column(db.String(100), nullable=True)
   email = db.Column(db.String(255), nullable=False, unique=True)
   phone = db.Column(db.String(20), nullable=True)
-  is_coach = db.Column(db.Boolean, nullable=False, default=False)
+  role_id = db.Column(db.Boolean, nullable=False, default=False)
+  is_active = db.Column(db.Boolean, default=True)
   city = db.Column(db.String(100), nullable=True)
   state = db.Column(db.String(100), nullable=True)
   zip_code = db.Column(db.String(20), nullable=True)
   join_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   birthdate = db.Column(db.Date, nullable=True)
   height = db.Column(db.Integer, nullable=True)  
-  weight = db.Column(db.Integer, nullable=True)  
+  weight = db.Column(db.Integer, nullable=True)
+  delete_requested_at = db.Column(db.DateTime, nullable=True)
 
   passwords = relationship('Password', back_populates='member', uselist=False)
   coaches = relationship('CoachInfo', secondary='coaches_members_link', back_populates='member')
@@ -29,7 +31,7 @@ class Member(db.Model):
   goals = relationship('MemberGoals', back_populates='member')
   workouts = relationship('Workout', back_populates='member')
   workout_plans = relationship('WorkoutPlan', back_populates='member')
-  
+
   def __repr__(self):
     """String representation of a Member instance."""
     return f"<Member {self.first_name} {self.last_name}>"
@@ -43,10 +45,22 @@ class Member(db.Model):
       db.session.commit()
     
   def delete(self):
-    """Deletes the Member instance from the DB."""
-    db.session.delete(self)
+    """ Soft delete the member """
+    self.is_active = False
+    self.delete_requested_at = datetime.utcnow()
     db.session.commit()
 
+  def cancel_delete(self):
+    """ Cancel a soft delete request """
+    self.is_active = True
+    self.delete_requested_at = None
+    db.session.commit()
+  
+  def hard_delete(self):
+    """ Permanently delete the member """
+    db.session.delete(self)
+    db.session.commit()
+    
   def update(self, **kwargs):
     """Updates Member attributes specified in 'kwargs'."""
     for key, value in kwargs.items():
@@ -355,29 +369,29 @@ class WorkoutPlan(db.Model):
     if commit:
       db.session.commit()
 
-    def delete(self):
-      """Delete a workout plan."""
-      db.session.delete(self)
+  def delete(self):
+    """Delete a workout plan."""
+    db.session.delete(self)
+    db.session.commit()
+
+  def link_workout(self, workout_id, sequence, commit=True):
+    """Link a workout to this workout plan."""
+    link = WorkoutPlanLink(plan_id=self.plan_id, workout_id=workout_id, sequence=sequence)
+    db.session.add(link)
+    if commit:
       db.session.commit()
 
-    def link_workout(self, workout_id, sequence, commit=True):
-      """Link a workout to this workout plan."""
-      link = WorkoutPlanLink(plan_id=self.plan_id, workout_id=workout_id, sequence=sequence)
-      db.session.add(link)
+  def unlink_workout(self, workout_id, commit=True):
+    """Unlink a workout from this workout plan."""
+    link = WorkoutPlanLink.query.filter_by(plan_id=self.plan_id, workout_id=workout_id).first()
+    if link:
+      db.session.delete(link)
       if commit:
         db.session.commit()
 
-    def unlink_workout(self, workout_id, commit=True):
-      """Unlink a workout from this workout plan."""
-      link = WorkoutPlanLink.query.filter_by(plan_id=self.plan_id, workout_id=workout_id).first()
-      if link:
-        db.session.delete(link)
-        if commit:
-          db.session.commit()
-
-    def get_workouts(self):
-      """Retrieve all workouts linked to this workout plan."""
-      return [link.workout for link in self.workout_plan_links]
+  def get_workouts(self):
+    """Retrieve all workouts linked to this workout plan."""
+    return [link.workout for link in self.workout_plan_links]
 
 # The `ExerciseStat` class represents exercise statistics and provides methods for saving, deleting,
 # updating, and finding exercise stats in the database.
@@ -440,25 +454,25 @@ class WorkoutPlanLink(db.Model):
     if commit:
       db.session.commit()
 
-    def delete(self):
-      """Deletes a workout plan link from the database."""
-      db.session.delete(self)
-      db.session.commit()
+  def delete(self):
+    """Deletes a workout plan link from the database."""
+    db.session.delete(self)
+    db.session.commit()
 
-    @classmethod
-    def find_by_plan_id(cls, plan_id):
-      """Finds all workout plan links for a given plan ID."""
-      return cls.query.filter_by(plan_id=plan_id).all()
+  @classmethod
+  def find_by_plan_id(cls, plan_id):
+    """Finds all workout plan links for a given plan ID."""
+    return cls.query.filter_by(plan_id=plan_id).all()
 
-    @classmethod
-    def find_by_workout_id(cls, workout_id):
-      """Finds all workout plan links for a given workout ID."""
-      return cls.query.filter_by(workout_id=workout_id).all()
+  @classmethod
+  def find_by_workout_id(cls, workout_id):
+    """Finds all workout plan links for a given workout ID."""
+    return cls.query.filter_by(workout_id=workout_id).all()
 
-    @classmethod
-    def find_link(cls, plan_id, workout_id):
-      """Finds a specific link between a workout plan and a workout."""
-      return cls.query.filter_by(plan_id=plan_id, workout_id=workout_id).first()
+  @classmethod
+  def find_link(cls, plan_id, workout_id):
+    """Finds a specific link between a workout plan and a workout."""
+    return cls.query.filter_by(plan_id=plan_id, workout_id=workout_id).first()
   
 # The `WorkoutStat` class represents a workout statistic and provides methods for saving, deleting,
 # and finding workout stats in the database.
@@ -479,20 +493,20 @@ class WorkoutStat(db.Model):
     if commit:
       db.session.commit()
 
-    def delete(self):
-      """Deletes a workout statistic from the database."""
-      db.session.delete(self)
-      db.session.commit()
+  def delete(self):
+    """Deletes a workout statistic from the database."""
+    db.session.delete(self)
+    db.session.commit()
 
-    @classmethod
-    def find_by_workout_id(cls, workout_id):
-      """Finds all stats for a given workout ID."""
-      return cls.query.filter_by(workout_id=workout_id).all()
+  @classmethod
+  def find_by_workout_id(cls, workout_id):
+    """Finds all stats for a given workout ID."""
+    return cls.query.filter_by(workout_id=workout_id).all()
 
-    @classmethod
-    def find_stat(cls, stat_id):
-      """Finds a specific workout stat by its ID."""
-      return cls.query.get(stat_id)
+  @classmethod
+  def find_stat(cls, stat_id):
+    """Finds a specific workout stat by its ID."""
+    return cls.query.get(stat_id)
   
 # The `WorkoutExercise` class represents a model for workout exercises in a database, with methods for
 # saving, deleting, and finding exercises by workout or exercise ID.
