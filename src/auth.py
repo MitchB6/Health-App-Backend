@@ -4,6 +4,7 @@ from flask_jwt_extended import (JWTManager, create_access_token,
 create_refresh_token,jwt_required,get_jwt_identity)
 from flask_bcrypt import Bcrypt
 
+from .services import check_password
 from .serializers import signup_model,login_model,auth_ns
 from .models import Member,Password
 from .extensions import db
@@ -23,7 +24,8 @@ class SignUp(Resource):
         return jsonify({"message":f"Email {email} already exists"})
       
       new_member=Member(
-        email=data.get('email')
+        email=data.get('email'),
+        phone=data.get('phone')
       )
       new_member.save(flush=True)
       new_password=Password(
@@ -49,24 +51,21 @@ class Login(Resource):
     db_user=Member.query.filter_by(email=email).first()
 
     if db_user:
-      db_password = db_user.passwords
-
+      return check_password(db_user)
+      """      
       if db_user and bcrypt.check_password_hash(db_password.hashed_pw, password):
-        """JWT_ACCESS_TOKEN_EXPIRES default(15 minutes)"""         
+        #JWT_ACCESS_TOKEN_EXPIRES default(15 minutes)         
         access_token=create_access_token(identity=db_user.member_id)
         refresh_token=create_refresh_token(identity=db_user.member_id)
-        
-        print("Access Token:", access_token)
-        print("Refresh Token:", refresh_token)
         
         response_data={
           "access token": access_token,
           "refresh token": refresh_token
         }
-        print("Response Data:", response_data)
         return jsonify(response_data)
       else:
         return jsonify({"message":"Invalid credentials"}), 401
+      """
     else:
       return jsonify({"message": "User not found"}), 404
 

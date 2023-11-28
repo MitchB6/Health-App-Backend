@@ -15,7 +15,6 @@ class Member(db.Model):
   email = db.Column(db.String(255), nullable=False, unique=True)
   phone = db.Column(db.String(20), nullable=True)
   role_id = db.Column(db.Boolean, nullable=False, default=False)
-  is_active = db.Column(db.Boolean, default=True)
   city = db.Column(db.String(100), nullable=True)
   state = db.Column(db.String(100), nullable=True)
   zip_code = db.Column(db.String(20), nullable=True)
@@ -23,7 +22,6 @@ class Member(db.Model):
   birthdate = db.Column(db.Date, nullable=True)
   height = db.Column(db.Integer, nullable=True)  
   weight = db.Column(db.Integer, nullable=True)
-  delete_requested_at = db.Column(db.DateTime, nullable=True)
 
   passwords = relationship('Password', back_populates='member', uselist=False)
   coaches = relationship('CoachInfo', secondary='coaches_members_link', back_populates='member')
@@ -43,20 +41,8 @@ class Member(db.Model):
       db.session.flush()
     if commit:
       db.session.commit()
-    
-  def delete(self):
-    """ Soft delete the member """
-    self.is_active = False
-    self.delete_requested_at = datetime.utcnow()
-    db.session.commit()
-
-  def cancel_delete(self):
-    """ Cancel a soft delete request """
-    self.is_active = True
-    self.delete_requested_at = None
-    db.session.commit()
   
-  def hard_delete(self):
+  def delete(self):
     """ Permanently delete the member """
     db.session.delete(self)
     db.session.commit()
