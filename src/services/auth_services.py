@@ -11,8 +11,8 @@ from .validations import *
 def change_password(data):
   get_jwt_identity()
   current_member_id = get_jwt_identity()
-  old_password = data.get('old_password')
-  new_password = data.get('new_password')
+  old_password = str(data.get('old_password'))
+  new_password = str(data.get('new_password'))
   
   member = Member.query.get_or_404(current_member_id)
   current_password = member.passwords.hashed_pw
@@ -27,11 +27,11 @@ def change_password(data):
   return {"message": "Password changed successfully"}, 200
 
 def create_user(data):
-  role_id=data.get('role_id')
-  username=data.get('username')
-  email=data.get('email')
-  password=data.get('password')
-  phone=data.get('phone')
+  role_id=int(data.get('role_id'))
+  username=str(data.get('username'))
+  email=str(data.get('email'))
+  password=str(data.get('password'))
+  phone=str(data.get('phone'))
   
   if role_id==2:
     return {"message": "Cannot signup as an admin"}, 400
@@ -45,7 +45,7 @@ def create_user(data):
   # Validate password
   if not validate_password(password):
     return {"message": "Password must be at least 8 characters long"}, 400
-
+  
   # Check if email already exists
   if Member.query.filter_by(email=email).first():
     return {"message": f"Email {email} already exists"}, 409
@@ -71,9 +71,9 @@ def create_user(data):
   return {"message": "User created successfully"}, 201
 
 def login_user(data):
-  role_id=data.get('role_id')
-  email=data.get('email')
-  password=data.get('password')
+  role_id=int(data.get('role_id'))
+  email=str(data.get('email'))
+  password=str(data.get('password'))
   
   if not validate_email(email):
     return {"message": "Invalid email format"}, 400
