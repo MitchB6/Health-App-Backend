@@ -29,11 +29,17 @@ def change_password(current_member_id, old_password, new_password):
   return {"message": "Password changed successfully"}, 200
 
 def create_user(data):
+  role=data.get('role')
   username=data.get('username')
   email=data.get('email')
   password=data.get('password')
   phone=data.get('phone')
   
+  # Validate role
+  if not role:
+    return {"message": "Role cannot be empty"}, 400
+  if role==2:
+    return {"message": "Cannot signup as an admin"}, 400
   # Validate email
   if not validate_email(email):
     return {"message": "Invalid email format"}, 400
@@ -46,7 +52,7 @@ def create_user(data):
   if Member.query.filter_by(email=email).first():
     return {"message": f"Email {email} already exists"}, 409
   
-  new_member = Member(email=email, phone=phone)
+  new_member = Member(role=role,email=email, phone=phone, username=username)
   db.session.add(new_member)
   db.session.flush()  # Flush to get member_id
 
