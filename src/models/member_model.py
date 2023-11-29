@@ -13,8 +13,7 @@ class Member(db.Model):
 
   personal_info = db.relationship('PersonalInfo', back_populates='member', uselist=False, cascade='all, delete-orphan')
   passwords = db.relationship('Password', back_populates='member', uselist=False, cascade='all, delete-orphan')
-  coaches = db.relationship('CoachInfo', secondary='coaches_members_link', back_populates='member', cascade='all, delete-orphan')
-  coach_info = db.relationship('CoachInfo', back_populates='member', cascade='all, delete-orphan')
+  coaches = db.relationship('CoachInfo', secondary='coaches_members_link', back_populates='member')  
   goals = db.relationship('MemberGoals', back_populates='member', cascade='all, delete-orphan')
   workouts = db.relationship('Workout', back_populates='member', cascade='all, delete-orphan')
   workout_plans = db.relationship('WorkoutPlan', back_populates='member', cascade='all, delete-orphan')
