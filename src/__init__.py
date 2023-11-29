@@ -11,7 +11,7 @@ from .home import home_ns
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     
     db.init_app(app)
     migrate.init_app(app,db)
@@ -20,12 +20,13 @@ def create_app(config):
     # Initialize database
     with app.app_context():
         db.create_all()
-    
-    # LEAVE THIS HERE OR THE ROOT ROUTE GETS OVERWRITTEN BY THE NAMESPACES
+        
+    """
     @app.route('/')
     def index():
-        """fire name don't hate"""
+        fire name don't hate
         return jsonify({"message": "FIT THIS"})
+    """
     
     @app.errorhandler(404)
     def not_found(err):

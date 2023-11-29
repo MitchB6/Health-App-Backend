@@ -7,7 +7,7 @@ from .models import Member
 from .serializers import member_model, member_ns
 
 
-@member_ns.route('/<int:id>')
+@member_ns.route('/settings')
 class MemberSettingsResource(Resource):
   @member_ns.marshal_with(member_model)
   def get(self):
@@ -38,7 +38,7 @@ class MemberSettingsResource(Resource):
     member.delete()
     return jsonify({"message": "Member deleted successfully.."}), 200
 
-@member_ns.route('/<int:id>/goals')
+@member_ns.route('/goals')
 class MemberGoalsResource(Resource):
   @member_ns.marshal_with(member_model)
   def get(self):
@@ -63,7 +63,7 @@ class MemberGoalsResource(Resource):
     member.update(**data)
     return member, 200
 
-@member_ns.route('/<int:id>/workouts')
+@member_ns.route('/workouts')
 class WorkoutsResource(Resource):
   @member_ns.marshal_with(member_model)
   def get(self):

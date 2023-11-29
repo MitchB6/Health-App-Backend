@@ -5,9 +5,9 @@ from .serializers import home_ns
 
 @home_ns.route('/')
 class HomeResource(Resource):
-    def get(self):
-        """Homepage"""
-        return jsonify({"message":"hello world"})
+  def get(self):
+    """Homepage"""
+    return jsonify({"message":"hello world"})
 
 @home_ns.route('/health')
 class HealthResource(Resource):
