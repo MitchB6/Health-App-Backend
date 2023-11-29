@@ -25,7 +25,7 @@ def create_app(config):
     import_models()
     migrate.init_app(app,db)
     JWTManager(app)
- 
+    
     # Initialize database
     with app.app_context():
         db.create_all()

@@ -18,7 +18,7 @@ class MemberSettingsResource(Resource):
     """
     print("GETTING MEMBER SETTINGS")
     result, status_code = get_member_settings()
-    return make_response(result, status_code)
+    return make_response(jsonify(result), status_code)
 
   @member_ns.marshal_with(member_model)
   @member_ns.expect(member_model, security='Bearer Auth')
@@ -30,7 +30,7 @@ class MemberSettingsResource(Resource):
     """
     data = request.get_json()
     result, status_code = update_member_settings(data)
-    return make_response(result, status_code)
+    return make_response(jsonify(result), status_code)
 
   @jwt_required()
   @member_ns.expect(security='Bearer Auth')
