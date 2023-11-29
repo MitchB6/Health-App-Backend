@@ -8,8 +8,8 @@ class CoachesMembersLink(db.Model):
   __tablename__ = 'coaches_members_link'
 
   link_id = db.Column(db.Integer, primary_key=True)
-  coach_id = db.Column(db.Integer, db.ForeignKey('coach_info.coach_id'), nullable=False)
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
+  coach_id = db.Column(db.Integer, db.ForeignKey('coach_info.coach_id', ondelete='CASCADE'), nullable=False)
+  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)  
   
   @classmethod
   def create_link(cls, coach_id, member_id):

@@ -4,7 +4,7 @@ class PersonalInfo(db.Model):
     __tablename__ = 'personal_info'
 
     id = db.Column(db.Integer, primary_key=True)
-    member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     username = db.Column(db.String(255), unique=True)
@@ -18,4 +18,4 @@ class PersonalInfo(db.Model):
     age = db.Column(db.Integer)
     gender = db.Column(db.String(20))
 
-    member = db.relationship('Member', back_populates='personal_info')
+    member = db.relationship('Member', back_populates='personal_info', uselist=False)

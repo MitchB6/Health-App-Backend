@@ -7,7 +7,7 @@ class Workout(db.Model):
   __tablename__ = 'workouts'
 
   workout_id = db.Column(db.Integer, primary_key=True)
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
+  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)
   workout_name = db.Column(db.String(255), nullable=False)
   workout_date = db.Column(db.Date, nullable=False)
   energy_level = db.Column(db.Integer)

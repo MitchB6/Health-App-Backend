@@ -6,7 +6,7 @@ class WorkoutStat(db.Model):
   __tablename__ = 'workout_stats'
 
   stat_id = db.Column(db.Integer, primary_key=True)
-  workout_id = db.Column(db.Integer, db.ForeignKey('workouts.workout_id'), nullable=False)
+  workout_id = db.Column(db.Integer, db.ForeignKey('workouts.workout_id', ondelete='CASCADE'), nullable=False)
   duration = db.Column(db.Integer)  
   calories_burned = db.Column(db.Integer) 
   date = db.Column(db.DateTime, default=db.func.current_timestamp())  

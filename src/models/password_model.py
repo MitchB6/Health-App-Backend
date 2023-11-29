@@ -8,12 +8,10 @@ from ..extensions import db
 class Password(db.Model):
   __tablename__ = 'passwords'
   
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), primary_key=True)
+  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), primary_key=True)
   hashed_pw = db.Column(db.String(255), nullable=False)
   created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
-  password_reset_token = db.Column(db.String(64), nullable=True)
-  password_reset_expiration = db.Column(db.DateTime, nullable=True)
 
   member = db.relationship("Member", back_populates="passwords")
   
