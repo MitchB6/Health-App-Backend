@@ -84,7 +84,7 @@ def login_user(data):
   if role_id==2:
     return {"message": "Cannot login as an admin"}, 400
   
-  if role_id in [0,1]:
+  if int(role_id) in [0,1]:
     user = Member.query.filter_by(email=email).first()
 
   db_user = Member.query.filter_by(email=email).first()
