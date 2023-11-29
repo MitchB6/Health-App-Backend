@@ -9,7 +9,7 @@ class MemberGoals(db.Model):
   __tablename__ = 'member_goals'
 
   member_goal_id = db.Column(db.Integer, primary_key=True)
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
+  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)
   goal_description = db.Column(db.Text, nullable=False)
   target_date = db.Column(db.Date, nullable=False)
   goal_type = db.Column(db.String(50), nullable=False)

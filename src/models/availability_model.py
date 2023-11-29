@@ -6,7 +6,7 @@ class Availability(db.Model):
   __tablename__ = 'availability'
 
   availability_id = db.Column(db.Integer, primary_key=True)
-  coach_id = db.Column(db.Integer, db.ForeignKey('coach_info.coach_id'), nullable=False)
+  coach_id = db.Column(db.Integer, db.ForeignKey('coach_info.coach_id', ondelete='CASCADE'), nullable=False)
   start_time = db.Column(db.DateTime, nullable=False)
   end_time = db.Column(db.DateTime, nullable=False)
 

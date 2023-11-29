@@ -6,7 +6,7 @@ class WorkoutPlanLink(db.Model):
   __tablename__ = 'workout_plan_links'
 
   link_id = db.Column(db.Integer, primary_key=True)
-  plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.plan_id'), nullable=False)
+  plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.plan_id', ondelete='CASCADE'), nullable=False)
   workout_id = db.Column(db.Integer, db.ForeignKey('workouts.workout_id'), nullable=False)
   sequence = db.Column(db.Integer, nullable=False)
 

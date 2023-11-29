@@ -1,5 +1,5 @@
 from flask_restx import Resource
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 
 from ..services.member_services import get_member_settings, update_member_settings, delete_member
@@ -16,7 +16,8 @@ class MemberSettingsResource(Resource):
     Retrieves the settings for the current logged-in member.
     :return: The settings of the current member.
     """
-    return get_member_settings()
+    result, status_code = get_member_settings()
+    return make_response(result, status_code)
 
   @member_ns.marshal_with(member_model)
   @member_ns.expect(member_model, security='Bearer Auth')
@@ -27,7 +28,8 @@ class MemberSettingsResource(Resource):
     :return: The updated member data.
     """
     data = request.get_json()
-    return update_member_settings(data), 200
+    result, status_code = update_member_settings(data)
+    return make_response(result, status_code)
 
   @jwt_required()
   @member_ns.expect(security='Bearer Auth')
@@ -36,4 +38,5 @@ class MemberSettingsResource(Resource):
     Deletes the current logged-in member.
     :return: Success message.
     """
-    return jsonify(delete_member()), 200
+    result, status_code = delete_member()
+    return make_response(jsonify(result), status_code)

@@ -16,16 +16,16 @@ signup_model=api.model(
 login_model=api.model(
   "Login",
   {
-    "role_id":fields.Integer(default=0),
-    "email":fields.String(default="bill@email.com"),
-    "password":fields.String(default="12345678")
+    "role_id":fields.Integer(default=0, required=True),
+    "email":fields.String(default="bill@email.com", required=True),
+    "password":fields.String(default="12345678", required=True)
   }
 )
 
 change_password_model=api.model(
   "ChangePassword",
   {
-    "old_password":fields.String(),
-    "new_password":fields.String()    
+    "old_password":fields.String(default="12345678", required=True),
+    "new_password":fields.String(default="password", required=True)    
   }
 )
