@@ -6,10 +6,14 @@ from ..models.member_model import Member
 from ..models.password_model import Password
 from ..models.personalinfo_model import PersonalInfo
 from ..extensions import db, bcrypt
-from .validations import validate_email, validate_password
+from .validations import *
 
-
-def change_password(current_member_id, old_password, new_password):
+def change_password(data):
+  get_jwt_identity()
+  current_member_id = get_jwt_identity()
+  old_password = data.get('old_password')
+  new_password = data.get('new_password')
+  
   member = Member.query.get_or_404(current_member_id)
   current_password = member.passwords.hashed_pw
 
@@ -17,7 +21,7 @@ def change_password(current_member_id, old_password, new_password):
     return {"message": "Old password is incorrect"}, 401
 
   hashed_new_password = bcrypt.generate_password_hash(new_password)
-  current_password.hashed_pw = hashed_new_password
+  member.passwords.hashed_pw = hashed_new_password
   db.session.commit()
 
   return {"message": "Password changed successfully"}, 200
@@ -29,15 +33,15 @@ def create_user(data):
   password=data.get('password')
   phone=data.get('phone')
   
-  # Validate role
-  if not role_id:
-    return {"message": "Role cannot be empty"}, 400
   if role_id==2:
     return {"message": "Cannot signup as an admin"}, 400
   # Validate email
   if not validate_email(email):
     return {"message": "Invalid email format"}, 400
-
+  if not validate_username(username):
+    return {"message": "Invalid username format"}, 400
+  if not validate_phone(phone): 
+    return {"message": "Invalid phone format"}, 400
   # Validate password
   if not validate_password(password):
     return {"message": "Password must be at least 8 characters long"}, 400
@@ -66,17 +70,27 @@ def create_user(data):
 
   return {"message": "User created successfully"}, 201
 
-def login_user(email, password):
+def login_user(data):
+  role_id=data.get('role_id')
+  email=data.get('email')
+  password=data.get('password')
+  
   if not validate_email(email):
     return {"message": "Invalid email format"}, 400
 
   if not password:
     return {"message": "Password cannot be empty"}, 400
 
+  if role_id==2:
+    return {"message": "Cannot login as an admin"}, 400
+  
+  if role_id in [0,1]:
+    user = Member.query.filter_by(email=email).first()
+
   db_user = Member.query.filter_by(email=email).first()
   if db_user and bcrypt.check_password_hash(db_user.passwords.hashed_pw, password):
-    access_token = create_access_token(identity=db_user.member_id)
-    refresh_token = create_refresh_token(identity=db_user.member_id)
+    access_token = create_access_token(identity=db_user.member_id,additional_claims={"role_id": user.role_id})
+    refresh_token = create_refresh_token(identity=db_user.member_id, additional_claims={"role_id": user.role_id})
 
     return {
       "access token": access_token,

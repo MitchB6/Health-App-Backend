@@ -7,7 +7,8 @@ authoriztions = {
   'Bearer Auth': {
     'type': 'apiKey',
     'in': 'header',
-    'name': 'Authorization'
+    'name': 'Authorization',
+    'description': "Type in the field 'Bearer' [space] and then your token."
   }
 }
 

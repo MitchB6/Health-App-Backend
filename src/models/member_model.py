@@ -8,17 +8,17 @@ class Member(db.Model):
 
   member_id = db.Column(db.Integer, primary_key=True)
   email = db.Column(db.String(100), nullable=True)
-  role_id = db.Column(db.Integer, nullable=False, default=False)
+  role_id = db.Column(db.Integer, nullable=False, default=0)
   join_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-  personal_info = db.relationship('PersonalInfo', back_populates='member', uselist=False)
-  passwords = db.relationship('Password', back_populates='member', uselist=False)
-  coaches = db.relationship('CoachInfo', secondary='coaches_members_link', back_populates='member')
-  coach_info = db.relationship('CoachInfo', back_populates='member')
-  goals = db.relationship('MemberGoals', back_populates='member')
-  workouts = db.relationship('Workout', back_populates='member')
-  workout_plans = db.relationship('WorkoutPlan', back_populates='member')
-
+  personal_info = db.relationship('PersonalInfo', back_populates='member', uselist=False, cascade='all, delete-orphan')
+  passwords = db.relationship('Password', back_populates='member', uselist=False, cascade='all, delete-orphan')
+  coaches = db.relationship('CoachInfo', secondary='coaches_members_link', back_populates='member', cascade='all, delete-orphan')
+  coach_info = db.relationship('CoachInfo', back_populates='member', cascade='all, delete-orphan')
+  goals = db.relationship('MemberGoals', back_populates='member', cascade='all, delete-orphan')
+  workouts = db.relationship('Workout', back_populates='member', cascade='all, delete-orphan')
+  workout_plans = db.relationship('WorkoutPlan', back_populates='member', cascade='all, delete-orphan')
+  
   def __repr__(self):
     """String representation of a Member instance."""
     if self.personal_info:

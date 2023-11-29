@@ -19,6 +19,6 @@ def update_member_settings(data):
 
 def delete_member():
     current_member_id = get_jwt_identity()
-    member = Member.query.filter_by(id=current_member_id, is_active=True).first_or_404()
+    member = Member.query.filter_by(member_id=current_member_id).first_or_404()
     member.delete()
     return {"message": "Member deleted successfully.."}

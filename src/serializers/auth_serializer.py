@@ -5,19 +5,20 @@ from ..extensions import api
 signup_model=api.model(
   "SignUp",
   {
-    "role_id":fields.String(required=True,description="Member's role"),
-    "username":fields.String(required=True,description="Member's username"),
-    "email":fields.String(required=True, description="Member's email address"),
-    "password":fields.String(required=True,description="Member's password"),
-    "phone":fields.String(required=False,description="Member's phone number"),
+    "role_id":fields.Integer(required=True, default=0),
+    "username":fields.String(required=True, default="bill"),
+    "email":fields.String(required=True, default="bill@email.com"),
+    "password":fields.String(required=True, default="12345678"),
+    "phone":fields.String(required=False, default="1234567890")
   }
 )
 
 login_model=api.model(
   "Login",
   {
-    "email":fields.String(),
-    "password":fields.String()
+    "role_id":fields.Integer(default=0),
+    "email":fields.String(default="bill@email.com"),
+    "password":fields.String(default="12345678")
   }
 )
 

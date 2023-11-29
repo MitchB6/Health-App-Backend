@@ -8,29 +8,32 @@ from ..namespace import member_ns
 
 @member_ns.route('/settings')
 class MemberSettingsResource(Resource):
-    @member_ns.marshal_with(member_model)
-    @jwt_required()
-    def get(self):
-      """
-      Retrieves the settings for the current logged-in member.
-      :return: The settings of the current member.
-      """
-      return get_member_settings()
+  @member_ns.marshal_with(member_model)
+  @member_ns.expect(security='Bearer Auth')
+  @jwt_required()
+  def get(self):
+    """
+    Retrieves the settings for the current logged-in member.
+    :return: The settings of the current member.
+    """
+    return get_member_settings()
 
-    @member_ns.marshal_with(member_model)
-    @jwt_required()
-    def put(self):
-      """
-      Updates the settings for the current logged-in member.
-      :return: The updated member data.
-      """
-      data = request.get_json()
-      return update_member_settings(data), 200
+  @member_ns.marshal_with(member_model)
+  @member_ns.expect(member_model, security='Bearer Auth')
+  @jwt_required()
+  def put(self):
+    """
+    Updates the settings for the current logged-in member.
+    :return: The updated member data.
+    """
+    data = request.get_json()
+    return update_member_settings(data), 200
 
-    @jwt_required()
-    def delete(self):
-      """
-      Deletes the current logged-in member.
-      :return: Success message.
-      """
-      return jsonify(delete_member()), 200
+  @jwt_required()
+  @member_ns.expect(security='Bearer Auth')
+  def delete(self):
+    """
+    Deletes the current logged-in member.
+    :return: Success message.
+    """
+    return jsonify(delete_member()), 200
