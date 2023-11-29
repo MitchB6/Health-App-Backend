@@ -1,5 +1,5 @@
 from ..extensions import db
-from .coachinfo_model import CoachInfo
+from .coach_model import CoachInfo
 from .member_model import Member
 
 # The `CoachesMembersLink` class is a model that represents the link between coaches and members in a

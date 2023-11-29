@@ -13,8 +13,8 @@ class CoachInfo(db.Model):
   schedule_text = db.Column(db.Text)
   qualifications = db.Column(db.Text)
   
-  member = db.relationship('Member', back_populates='coach_info', cascade='all, delete-orphan')
-  availabilities = db.relationship('Availability', back_populates='coach_info', order_by='Availability.start_time', cascade='all, delete-orphan')
+  member = db.relationship('Member', back_populates='coaches')
+  availabilities = db.relationship('Availability', back_populates='coaches', order_by='Availability.start_time', cascade='all, delete-orphan')
   members = db.relationship('Member', secondary='coaches_members_link', back_populates='coaches')
       
   def save(self, flush=False, commit=False):
