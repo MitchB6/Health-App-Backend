@@ -16,6 +16,7 @@ class MemberSettingsResource(Resource):
     Retrieves the settings for the current logged-in member.
     :return: The settings of the current member.
     """
+    print("GETTING MEMBER SETTINGS")
     result, status_code = get_member_settings()
     return make_response(result, status_code)
 
