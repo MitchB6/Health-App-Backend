@@ -112,6 +112,7 @@ class Exercise(db.Model):
       if hasattr(self, key) and value is not None:
         setattr(self, key, value)
     db.session.commit()
+    
   @classmethod
   def find_by_name(cls, name):
     """Finds an exercise by its name."""
