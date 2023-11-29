@@ -10,7 +10,7 @@ class Availability(db.Model):
   start_time = db.Column(db.DateTime, nullable=False)
   end_time = db.Column(db.DateTime, nullable=False)
 
-  coach_info = relationship('CoachInfo', back_populates='availabilities')
+  coach_info = db.relationship('CoachInfo', back_populates='availabilities')
   
   def save(self):
     """Save or update availability."""

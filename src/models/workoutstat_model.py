@@ -11,7 +11,7 @@ class WorkoutStat(db.Model):
   calories_burned = db.Column(db.Integer) 
   date = db.Column(db.DateTime, default=db.func.current_timestamp())  
 
-  workout = relationship('Workout', back_populates='workout_stats')
+  workout = db.relationship('Workout', back_populates='workout_stats')
   
   def save(self, commit=False):
     """Saves a workout statistic to the database."""

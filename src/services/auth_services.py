@@ -1,20 +1,13 @@
 from flask import jsonify
 from flask_jwt_extended import (JWTManager, create_access_token,
 create_refresh_token,get_jwt_identity)
-import re #regex
 
 from ..models.member_model import Member
 from ..models.password_model import Password
+from ..models.personalinfo_model import PersonalInfo
 from ..extensions import db, bcrypt
+from .validations import validate_email, validate_password
 
-def validate_email(email):
-  return re.match(r"[^@]+@[^@]+\.[^@]+", email)
-
-def validate_password(password):
-  return len(password) >= 8
-
-def validate_phone(phone):
-  return re.match(r"\d{10}", phone)
 
 def change_password(current_member_id, old_password, new_password):
   member = Member.query.get_or_404(current_member_id)
@@ -30,16 +23,16 @@ def change_password(current_member_id, old_password, new_password):
   return {"message": "Password changed successfully"}, 200
 
 def create_user(data):
-  role=data.get('role')
+  role_id=data.get('role_id')
   username=data.get('username')
   email=data.get('email')
   password=data.get('password')
   phone=data.get('phone')
   
   # Validate role
-  if not role:
+  if not role_id:
     return {"message": "Role cannot be empty"}, 400
-  if role==2:
+  if role_id==2:
     return {"message": "Cannot signup as an admin"}, 400
   # Validate email
   if not validate_email(email):
@@ -53,10 +46,17 @@ def create_user(data):
   if Member.query.filter_by(email=email).first():
     return {"message": f"Email {email} already exists"}, 409
   
-  new_member = Member(role=role,email=email, phone=phone, username=username)
+  new_member = Member(role_id=role_id,email=email)
   db.session.add(new_member)
   db.session.flush()  # Flush to get member_id
 
+  new_personal_info = PersonalInfo(
+    member_id=new_member.member_id,
+    username=username,
+    phone=phone
+  )
+  db.session.add(new_personal_info)
+  
   new_password = Password(
     member_id=new_member.member_id,
     hashed_pw=bcrypt.generate_password_hash(password)

@@ -5,7 +5,7 @@ from ..extensions import api
 signup_model=api.model(
   "SignUp",
   {
-    "role":fields.String(required=True,description="Member's role"),
+    "role_id":fields.String(required=True,description="Member's role"),
     "username":fields.String(required=True,description="Member's username"),
     "email":fields.String(required=True, description="Member's email address"),
     "password":fields.String(required=True,description="Member's password"),
@@ -18,5 +18,13 @@ login_model=api.model(
   {
     "email":fields.String(),
     "password":fields.String()
+  }
+)
+
+change_password_model=api.model(
+  "ChangePassword",
+  {
+    "old_password":fields.String(),
+    "new_password":fields.String()    
   }
 )

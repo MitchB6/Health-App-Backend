@@ -25,9 +25,9 @@ class Workout(db.Model):
       db.session.commit()
       
   def delete(self):
-        """Delete a workout."""
-        db.session.delete(self)
-        db.session.commit()
+      """Delete a workout."""
+      db.session.delete(self)
+      db.session.commit()
 
   @classmethod
   def find_by_member(cls, member_id):
