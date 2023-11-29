@@ -3,18 +3,26 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
 from .extensions import db,api,migrate
-from .models.member_model import Member
-from .models.password_model import Password
 from .routes.auth import auth_ns
 from .routes.member import member_ns
 from .routes.home import home_ns
+import os, pkgutil, importlib
 
+def import_models():
+  # Define the path to the models directory
+  models_path = os.path.join(os.path.dirname(__file__), 'models')
+  
+  for _, name, _ in pkgutil.iter_modules([models_path]):
+    imported_module = importlib.import_module('.'+ name, package='src.models')
+ 
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
     CORS(app, resources={r"/*": {"origins": "*"}})
     
     db.init_app(app)
+    
+    import_models()
     migrate.init_app(app,db)
     JWTManager(app)
  
@@ -22,13 +30,11 @@ def create_app(config):
     with app.app_context():
         db.create_all()
         
-
     @app.route('/')
     def index():
         """fire name don't hate"""
         return jsonify({"message": "FIT THIS"})
 
-    
     @app.errorhandler(404)
     def not_found(err):
         return jsonify({"message":"I dunno bro its not here"})
@@ -40,10 +46,10 @@ def create_app(config):
     
     @app.shell_context_processor
     def make_shell_context():
-        return{
-            "db":db,
-            "Member":Member,
-            "Password":Password   
-        }
+      return{
+        "db":db
+      }
     
     return app
+  
+

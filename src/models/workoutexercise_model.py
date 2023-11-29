@@ -1,5 +1,3 @@
-from sqlalchemy.orm import relationship
-
 from ..extensions import db
   
 # The `WorkoutExercise` class represents a model for workout exercises in a database, with methods for
@@ -14,14 +12,14 @@ class WorkoutExercise(db.Model):
   reps = db.Column(db.Integer, nullable=True)
   notes = db.Column(db.Text, nullable=True)
 
-  workout = relationship('Workout', back_populates='workout_exercises')
-  exercise = relationship('Exercise', back_populates='workout_exercises')
+  workout = db.relationship('Workout', back_populates='workout_exercises')
+  exercise = db.relationship('Exercise', back_populates='workout_exercises')
   
   def save(self, commit=False):
     """Saves a workout exercise record to the database."""
     db.session.add(self)
     if commit:
-        db.session.commit()
+      db.session.commit()
 
   def delete(self):
     """Deletes a workout exercise record from the database."""

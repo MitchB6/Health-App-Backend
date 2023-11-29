@@ -29,7 +29,7 @@ class CoachesMembersLink(db.Model):
     if link_to_remove:
       db.session.delete(link_to_remove)
       db.session.commit()
-
+  
   @classmethod
   def find_coaches_by_member(cls, member_id):
     """Find coaches for specific member"""

@@ -19,5 +19,7 @@ member_model = member_ns.model(
         "birthdate": fields.Date(description="Member's birthdate"),
         "height": fields.Integer(description="Member's height in centimeters"),
         "weight": fields.Integer(description="Member's weight in kilograms"),
+        "age": fields.Integer(description="Member's age"),
+        "gender": fields.String(description="Member's gender")
     }
 )

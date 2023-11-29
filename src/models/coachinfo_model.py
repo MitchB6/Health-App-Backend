@@ -6,19 +6,17 @@ class CoachInfo(db.Model):
   __tablename__ = 'coach_info'
   
   coach_id = db.Column(db.Integer, primary_key=True)
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'), nullable=False)
-  email = db.Column(db.String(255), nullable=False)
-  phone = db.Column(db.String(20))
+  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)
   specialization = db.Column(db.Text)
   price = db.Column(db.Numeric(10, 2))
   location = db.Column(db.Text)
   schedule_text = db.Column(db.Text)
   qualifications = db.Column(db.Text)
   
-  member = db.relationship('Member', back_populates='coach_info')
-  member_coach_link = db.relationship('Member', secondary='coaches_members_link', back_populates='coaches')
-  availabilities = db.relationship('Availability', back_populates='coach_info', order_by='Availability.start_time')
-  
+  member = db.relationship('Member', back_populates='coach_info', cascade='all, delete-orphan')
+  availabilities = db.relationship('Availability', back_populates='coach_info', order_by='Availability.start_time', cascade='all, delete-orphan')
+  members = db.relationship('Member', secondary='coaches_members_link', back_populates='coaches')
+      
   def save(self, flush=False, commit=False):
     """Saves coach information to the database."""
     db.session.add(self)

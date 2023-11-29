@@ -13,7 +13,7 @@ class ExerciseStat(db.Model):
   duration = db.Column(db.Integer)  
   recorded_at = db.Column(db.DateTime, server_default=db.func.now())
 
-  exercise = relationship('Exercise', back_populates='stats')
+  exercise = db.relationship('Exercise', back_populates='stats')
 
   def save(self):
     """Saves exercise stat to the database."""
