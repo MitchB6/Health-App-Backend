@@ -3,8 +3,9 @@ from flask_jwt_extended import (JWTManager, create_access_token,
 create_refresh_token,get_jwt_identity)
 import re #regex
 
-from .models import Member,Password
-from .extensions import db, bcrypt
+from ..models.member_model import Member
+from ..models.password_model import Password
+from ..extensions import db, bcrypt
 
 def validate_email(email):
   return re.match(r"[^@]+@[^@]+\.[^@]+", email)

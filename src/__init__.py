@@ -3,10 +3,11 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
 from .extensions import db,api,migrate
-from .models import Member,Password
-from .member import member_ns
-from .auth import auth_ns
-from .home import home_ns
+from .models.member_model import Member
+from .models.password_model import Password
+from .routes.auth import auth_ns
+from .routes.member import member_ns
+from .routes.home import home_ns
 
 def create_app(config):
     app = Flask(__name__)
@@ -21,12 +22,12 @@ def create_app(config):
     with app.app_context():
         db.create_all()
         
-    """
+
     @app.route('/')
     def index():
-        fire name don't hate
+        """fire name don't hate"""
         return jsonify({"message": "FIT THIS"})
-    """
+
     
     @app.errorhandler(404)
     def not_found(err):
