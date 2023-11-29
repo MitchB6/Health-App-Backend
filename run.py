@@ -4,4 +4,4 @@ from config import DevConfig,ProdConfig,TestConfig
 app=create_app(DevConfig)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port='8000')
