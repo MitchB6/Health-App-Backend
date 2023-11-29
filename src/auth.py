@@ -1,7 +1,6 @@
 from flask import jsonify,request,make_response
 from flask_restx import Resource
-from flask_jwt_extended import (JWTManager,
-jwt_required,get_jwt_identity)
+from flask_jwt_extended import JWTManager,jwt_required,get_jwt_identity
 
 from .serializers import signup_model,login_model,auth_ns
 from .services import create_user, login_user, refresh_access_token, change_password
@@ -39,6 +38,6 @@ class ChangePasswordResource(Resource):
     """Endpoint for a member to change their password"""
     current_member_id = get_jwt_identity()
     data = request.get_json()
-    
+   
     result, status_code = change_password(current_member_id, data.get('old_password'), data.get('new_password'))
     return make_response(jsonify(result), status_code)
