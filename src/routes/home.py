@@ -1,7 +1,7 @@
 from flask import jsonify
-from flask_restx import Resource
+from flask_restx import Resource, Namespace
 
-from .serializers import home_ns
+from ..namespace import home_ns
 
 @home_ns.route('/')
 class HomeResource(Resource):

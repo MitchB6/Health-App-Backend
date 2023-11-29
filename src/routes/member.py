@@ -1,11 +1,11 @@
 from flask_restx import Resource
 from flask import request,jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import datetime, timedelta
 
-from .models import Member
-from .serializers import member_model, member_ns
+from ..models.member_model import Member
+from ..serializers.member_serializer import member_model
 
+from ..namespace import member_ns
 
 @member_ns.route('/settings')
 class MemberSettingsResource(Resource):
