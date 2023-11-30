@@ -32,23 +32,3 @@ class Exercise(db.Model):
       if hasattr(self, key) and value is not None:
         setattr(self, key, value)
     db.session.commit()
-
-  @classmethod
-  def find_by_name(cls, name):
-    """Finds an exercise by its name."""
-    return cls.query.filter_by(name=name).first()
-
-  @classmethod
-  def all_exercises(cls):
-    """Returns all exercises."""
-    return cls.query.all()
-
-  @classmethod
-  def exercises_by_muscle_group(cls, muscle_group):
-    """Returns exercises for a specific muscle group."""
-    return cls.query.filter_by(muscle_group=muscle_group).all()
-
-  @classmethod
-  def exercises_by_equipment(cls, equipment):
-    """Returns exercises for a specific equipment."""
-    return cls.query.filter_by(equipment=equipment).all()
