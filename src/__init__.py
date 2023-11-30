@@ -4,8 +4,10 @@ from flask_cors import CORS
 
 from .extensions import db,api,migrate
 from .routes.auth import auth_ns
-from .routes.member import member_ns
+from .routes.member import member_ns 
 from .routes.home import home_ns
+from .routes.exercise import exercise_ns
+
 import os, pkgutil, importlib
 
 def import_models():
@@ -25,7 +27,7 @@ def create_app(config):
     import_models()
     migrate.init_app(app,db)
     JWTManager(app)
- 
+    
     # Initialize database
     with app.app_context():
         db.create_all()
@@ -43,6 +45,7 @@ def create_app(config):
     api.add_namespace(member_ns)
     api.add_namespace(auth_ns)
     api.add_namespace(home_ns)
+    api.add_namespace(exercise_ns)
     
     @app.shell_context_processor
     def make_shell_context():
