@@ -4,15 +4,16 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 
 authoriztions = {
-  'Bearer Auth': {
-    'type': 'apiKey',
-    'in': 'header',
-    'name': 'Authorization',
-    'description': "Type in the field 'Bearer' [space] and then your token."
-  }
+    'Bearer Auth': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': "Type in the field 'Bearer' [space] and then your token."
+    }
 }
 
-bcrypt=Bcrypt()
-db=SQLAlchemy()
-api=Api(title='Fit This', authorizations=authoriztions, security='Bearer Auth', doc='/docs')
+bcrypt = Bcrypt()
+db = SQLAlchemy()
+api = Api(title='FITintoTHIS', authorizations=authoriztions,
+          security='Bearer Auth', doc='/docs')
 migrate = Migrate()
