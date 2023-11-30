@@ -2,17 +2,20 @@ from ..extensions import db
 
 # The `WorkoutStat` class represents a workout statistic and provides methods for saving, deleting,
 # and finding workout stats in the database.
+
+
 class WorkoutStat(db.Model):
   __tablename__ = 'workout_stats'
 
   stat_id = db.Column(db.Integer, primary_key=True)
-  workout_id = db.Column(db.Integer, db.ForeignKey('workouts.workout_id', ondelete='CASCADE'), nullable=False)
-  duration = db.Column(db.Integer)  
-  calories_burned = db.Column(db.Integer) 
-  date = db.Column(db.DateTime, default=db.func.current_timestamp())  
+  workout_id = db.Column(db.Integer, db.ForeignKey(
+      'workouts.workout_id', ondelete='CASCADE'), nullable=False)
+  duration = db.Column(db.Integer)
+  calories_burned = db.Column(db.Integer)
+  date = db.Column(db.DateTime, server_default=db.func.now())
 
   workout = db.relationship('Workout', back_populates='workout_stats')
-  
+
   def save(self, commit=False):
     """Saves a workout statistic to the database."""
     db.session.add(self)

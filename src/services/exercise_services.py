@@ -5,16 +5,23 @@ def marshal_exercise(exercise):
   return {
       'name': exercise.name,
       'description': exercise.description,
-      'muscle_group': exercise.muscle_group
+      'muscle_group': exercise.muscle_group,
+      'equipment': exercise.equipment
   }
 
 
-def get_all_exercises():
+def get_all_exercises(muscle_group=None, equipment=None):
   """Get all exercises"""
   try:
-    exercises = Exercise.all_exercises()
+    query = Exercise.query
+    if muscle_group:
+      query = query.filter(Exercise.muscle_group == muscle_group)
+    if equipment:
+      # Assuming you have an 'equipment' field
+      query = query.filter(Exercise.equipment == equipment)
+
+    exercises = query.all()
     exercises_data = [marshal_exercise(exercise) for exercise in exercises]
-    print("Exercises Data:", exercises_data)  # Add this line for debugging
     return exercises_data, 200
   except Exception as e:
     return {"message": str(e)}, 500
