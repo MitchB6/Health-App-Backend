@@ -35,7 +35,6 @@ class ExerciseList(Resource):
 
 @exercise_ns.route('/<int:id>')
 class Exercise(Resource):
-  @exercise_ns.marshal_with(exercise_model)
   def get(self, id):
     """Fetch a single exercise"""
     result, status_code = get_exercise_by_id(id)
@@ -43,7 +42,6 @@ class Exercise(Resource):
 
   @jwt_required()
   @admin_required
-  @exercise_ns.expect(exercise_model)
   def put(self, id):
     """Update an exercise"""
     data = request.get_json()
