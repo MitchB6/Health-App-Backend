@@ -11,23 +11,26 @@ exercise_model = exercise_ns.model(
     'Exercise', {
         'name': fields.String(required=True),
         'description': fields.String(),
-        'muscle_group': fields.String()
+        'muscle_group': fields.String(),
+        'equipment': fields.String()
     })
 
 
 @exercise_ns.route('/')
 class ExerciseList(Resource):
-  # @exercise_ns.marshal_list_with(exercise_model)
+  # @exercise_ns.marshal_with(exercise_model)
   def get(self):
     """List all exercises"""
-    result, status_code = get_all_exercises()
-    return make_response(result, status_code)
+    muscle_group = request.args.get('muscle_group', None)
+    equipment = request.args.get('equipment', None)
+    result, status_code = get_all_exercises(muscle_group, equipment)
+    return make_response(jsonify(result), status_code)
 
   @jwt_required()
   @admin_required
   @exercise_ns.expect(exercise_model)
   def post(self):
-    """Create a new exercise"""
+    """Create a new exercaise"""
     data = request.get_json()
     result, status_code = create_exercise(data)
     return make_response(jsonify(result), status_code)
@@ -35,13 +38,15 @@ class ExerciseList(Resource):
 
 @exercise_ns.route('/<int:id>')
 class Exercise(Resource):
-  def get(self, id):
+  def get(self):
     """Fetch a single exercise"""
-    result, status_code = get_exercise_by_id(id)
+    data = request.get_json()
+    result, status_code = get_exercise_by_id(data)
     return make_response(jsonify(result), status_code)
 
   @jwt_required()
   @admin_required
+  @exercise_ns.expect(exercise_model)
   def put(self, id):
     """Update an exercise"""
     data = request.get_json()

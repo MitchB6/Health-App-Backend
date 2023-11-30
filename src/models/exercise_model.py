@@ -10,6 +10,7 @@ class Exercise(db.Model):
   name = db.Column(db.String(255), nullable=False, unique=True)
   description = db.Column(db.Text, nullable=True)
   muscle_group = db.Column(db.String(255), nullable=True)
+  equipment = db.Column(db.String(255), nullable=True)
 
   stats = db.relationship("ExerciseStat", back_populates="exercise")
   workout_exercises = db.relationship(
@@ -46,3 +47,8 @@ class Exercise(db.Model):
   def exercises_by_muscle_group(cls, muscle_group):
     """Returns exercises for a specific muscle group."""
     return cls.query.filter_by(muscle_group=muscle_group).all()
+
+  @classmethod
+  def exercises_by_equipment(cls, equipment):
+    """Returns exercises for a specific equipment."""
+    return cls.query.filter_by(equipment=equipment).all()
