@@ -17,7 +17,6 @@ def get_all_exercises(muscle_group=None, equipment=None):
     if muscle_group:
       query = query.filter(Exercise.muscle_group == muscle_group)
     if equipment:
-      # Assuming you have an 'equipment' field
       query = query.filter(Exercise.equipment == equipment)
 
     exercises = query.all()
