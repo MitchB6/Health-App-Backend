@@ -7,8 +7,7 @@ from ..services.member_services import get_member_settings, update_member_settin
 member_ns = Namespace('member', description='A namespace for Member')
 
 member_model = member_ns.model(
-    "Member",
-    {
+    "Member", {
         "member_id": fields.Integer(description="The unique identifier of a member"),
         "username": fields.String(required=True, description="Member's username"),
         "first_name": fields.String(required=True, description="Member's first name"),
@@ -25,8 +24,7 @@ member_model = member_ns.model(
         "weight": fields.Integer(description="Member's weight in kilograms"),
         "age": fields.Integer(description="Member's age"),
         "gender": fields.String(description="Member's gender")
-    }
-)
+    })
 
 
 @member_ns.route('/settings')
@@ -62,3 +60,16 @@ class MemberSettingsResource(Resource):
     """
     result, status_code = delete_member()
     return make_response(jsonify(result), status_code)
+
+
+@member_ns.route('/survey')
+class UserSurveyResource(Resource):
+  @member_ns.marshal_with(survey_fields)
+  def get(self, user_id):
+    # logic to retrieve a survey
+    pass
+
+  @member_ns.expect(survey_fields)
+  def post(self):
+    # logic to create a new survey
+    pass
