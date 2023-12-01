@@ -7,8 +7,7 @@ from ..services.member_services import get_member_settings, update_member_settin
 member_ns = Namespace('member', description='A namespace for Member')
 
 member_model = member_ns.model(
-    "Member",
-    {
+    "Member", {
         "member_id": fields.Integer(description="The unique identifier of a member"),
         "email": fields.String(description="The email of the member"),
         "role_id": fields.Integer(description="The role of the member"),
@@ -41,32 +40,32 @@ member_settings_model = member_ns.model(
 
 @member_ns.route('/settings')
 class MemberSettingsResource(Resource):
-    # @member_ns.marshal_with(member_settings_model)
-    @jwt_required()
-    def get(self):
-        """
-        Retrieves the settings for the current logged-in member.
-        :return: The settings of the current member.
-        """
-        result, status_code = get_member_settings()
-        return make_response(jsonify(result), status_code)
+  # @member_ns.marshal_with(member_settings_model)
+  @jwt_required()
+  def get(self):
+    """
+    Retrieves the settings for the current logged-in member.
+    :return: The settings of the current member.
+    """
+    result, status_code = get_member_settings()
+    return make_response(jsonify(result), status_code)
 
-    @member_ns.expect(member_settings_model)
-    @jwt_required()
-    def put(self):
-        """
-        Updates the settings for the current logged-in member.
-        :return: The updated member data.
-        """
-        data = request.get_json()
-        result, status_code = update_member_settings(data)
-        return make_response(jsonify(result), status_code)
+  @member_ns.expect(member_settings_model)
+  @jwt_required()
+  def put(self):
+    """
+    Updates the settings for the current logged-in member.
+    :return: The updated member data.
+    """
+    data = request.get_json()
+    result, status_code = update_member_settings(data)
+    return make_response(jsonify(result), status_code)
 
-    @jwt_required()
-    def delete(self):
-        """
-        Deletes the current logged-in member.
-        :return: Success message.
-        """
-        result, status_code = delete_member()
-        return make_response(jsonify(result), status_code)
+  @jwt_required()
+  def delete(self):
+    """
+    Deletes the current logged-in member.
+    :return: Success message.
+    """
+    result, status_code = delete_member()
+    return make_response(jsonify(result), status_code)
