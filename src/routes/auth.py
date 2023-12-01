@@ -129,7 +129,7 @@ class ChangePasswordResource(Resource):
   })
   @jwt_required()
   def post(self):
-    """Endpoint for a member to change their password"""
+    """User change their password"""
     data = request.get_json()
 
     result, status_code = change_password(data)
