@@ -13,7 +13,7 @@ class CoachInfo(db.Model):
   specialization = db.Column(db.Text)
   price = db.Column(db.Numeric(10, 2))
   location = db.Column(db.Text)
-  schedule_text = db.Column(db.Text)
+  schedule_general = db.Column(db.Text)
   qualifications = db.Column(db.Text)
   approved = db.Column(db.Boolean, default=False)
 
@@ -23,13 +23,23 @@ class CoachInfo(db.Model):
   members = db.relationship(
       'Member', secondary='coaches_members_link', back_populates='coaches')
 
-  def save(self, flush=False, commit=False):
+  def serialize(self):
+    """Serialize the CoachInfo object to a dictionary."""
+    return {
+        'coach_id': self.coach_id,
+        'member_id': self.member_id,
+        'specialization': self.specialization,
+        'price': float(self.price),  # Convert to float for JSON serialization
+        'location': self.location,
+        'schedule_general': self.schedule_general,
+        'qualifications': self.qualifications,
+        'approved': self.approved
+    }
+
+  def save(self, ):
     """Saves coach information to the database."""
     db.session.add(self)
-    if flush:
-      db.session.flush()
-    if commit:
-      db.session.commit()
+    db.session.commit()
 
   def delete(self):
     """Deletes coach information from the database."""

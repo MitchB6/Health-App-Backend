@@ -19,7 +19,7 @@ coach_signup_model = auth_ns.model(
         "specialization": fields.String(required=True, default_specialization=specializations[0]),
         "price": fields.Float(required=True, default=0.0),
         "location": fields.String(required=True),
-        "schedule_text": fields.String(required=True, general_schedule=schedules[0]),
+        "schedule_general": fields.String(required=True, general_schedule=schedules[0]),
         "qualifications": fields.String(required=True, default_qualifications=qualifications[0]),
         "member_id": fields.Integer(required=True)
     }
@@ -53,6 +53,14 @@ change_password_model = auth_ns.model(
     }
 )
 
+coach_approval_model = auth_ns.model(
+    "CoachApproval",
+    {
+        "member_id": fields.Integer(required=True),
+        "approved": fields.Boolean(required=True)
+    }
+)
+
 
 @auth_ns.route('/signup')
 class SignUp(Resource):
@@ -71,10 +79,19 @@ class SignUp(Resource):
 
 @auth_ns.route('/coach_signup')
 class CoachSignUp(Resource):
+
+  @jwt_required(optional=True)
   @auth_ns.expect(coach_signup_model)
   def post(self):
     """Coach form submission"""
     data = request.get_json()
+
+    if not data.get('member_id'):
+      current_member_id = get_jwt_identity()
+      if current_member_id:
+        data['member_id'] = current_member_id['member_id']
+      else:
+        return make_response(jsonify({'message': 'member_id not provided'}), 400)
     result, status_code = create_coach(data)
     return make_response(jsonify(result), status_code)
 
@@ -87,6 +104,7 @@ class CoachSignUp(Resource):
 
   @jwt_required()
   @admin_required
+  @auth_ns.expect(coach_approval_model)
   def put(self):
     """Approve coach form"""
     data = request.get_json()
