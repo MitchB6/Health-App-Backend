@@ -14,43 +14,68 @@ def create_coach(data):
 
   member_id = int(data.get('member_id'))
   specialization = str(data.get('specialization'))
-  price = float(data.get('price'))
+  price = round(float(data.get('price')), 2)
   location = str(data.get('location'))
-  schedule_text = str(data.get('schedule_text'))
+  schedule_general = str(data.get('schedule_general'))
   qualifications = str(data.get('qualifications'))
   approved = False
+
+  if not specialization:
+    return {"message": "Specialization cannot be empty"}, 400
+  if not location:
+    return {"message": "Location cannot be empty"}, 400
+  if not qualifications:
+    return {"message": "Qualifications cannot be empty"}, 400
+  if not schedule_general:
+    return {"message": "Schedule cannot be empty"}, 400
+  if price < 0:
+    return {"message": "Price cannot be negative"}, 400
+  if not member_id:
+    return {"message": "Member ID cannot be empty"}, 400
+
+  if not Member.query.get(member_id):
+    return {"message": "Member ID does not exist"}, 404
+
+  existing_coach = CoachInfo.query.filter_by(member_id=member_id).first()
+  if existing_coach:
+    return {"message": "A coach with this Member ID already exists"}, 400
 
   new_CoachInfo = CoachInfo(
       member_id=member_id,
       specialization=specialization,
       price=price,
       location=location,
-      schedule_text=schedule_text,
+      schedule_general=schedule_general,
       qualifications=qualifications,
       approved=approved
   )
 
-  db.session.add(new_CoachInfo)
+  CoachInfo.save(new_CoachInfo)
 
   return {"message": "Coach form submitted successfully"}, 200
 
 
 def update_coach(data):
   approved = bool(data.get('approved'))
+  coach = CoachInfo.query.get(data.get('coach_id'))
+  if coach is None:
+    return {"message": "Coach not found"}, 404
+
   if approved:
-    coach = CoachInfo.query.get_or_404(data.get('coach_id'))
+    print("APPROVAL", approved)
     coach.approved = approved
+    coach.member.role_id = 1
     db.session.commit()
     return {"message": "Coach approved"}, 200
   else:
-    coach = CoachInfo.query.get_or_404(data.get('coach_id'))
     db.CoachInfo.delete(coach)
     return {"message": "Coach denied"}, 200
 
 
 def get_all_coach_forms():
   forms = CoachInfo.query.filter_by(approved=False).all()
-  return jsonify([form.serialize() for form in forms]), 200
+  serialized_forms = [form.serialize() for form in forms]
+  return serialized_forms, 200
 
 
 def change_password(data):
@@ -133,6 +158,10 @@ def login_user(data):
     return {"message": "Role ID empty or invalid"}, 400
 
   db_user = Member.query.filter_by(email=email).first()
+
+  if not db_user:
+    return {"message": "Email not found"}, 404
+
   if role_id != db_user.role_id:
     return {"message": "Invalid role selection"}, 400
 
@@ -147,7 +176,7 @@ def login_user(data):
         "refresh token": refresh_token
     }, 200
   elif db_user:
-    return {"message": "Invalid credentials"}, 401
+    return {"message": "Wrong password"}, 401
   else:
     return {"message": "User not found"}, 404
 
