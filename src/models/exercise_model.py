@@ -11,6 +11,7 @@ class Exercise(db.Model):
   description = db.Column(db.Text, nullable=True)
   muscle_group = db.Column(db.String(255), nullable=True)
   equipment = db.Column(db.String(255), nullable=True)
+  is_active = db.Column(db.Boolean, nullable=False, default=True)
 
   stats = db.relationship("ExerciseStat", back_populates="exercise")
   workout_exercises = db.relationship(
