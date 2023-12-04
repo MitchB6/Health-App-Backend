@@ -1,9 +1,11 @@
-from flask import request
+from flask import request, jsonify, make_response
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
-from services.workout_services import create_workout, update_workout, delete_workout, get_workouts_by_member
+
+from ..services.workout_services import *
 
 workout_ns = Namespace('workouts', description='Workout related operations')
+
 
 workout_model = workout_ns.model('Workout', {
     'workout_name': fields.String(required=True, description='Name of the workout'),
@@ -19,6 +21,28 @@ class WorkoutList(Resource):
     """Create a new workout"""
     data = request.get_json()
     result, status_code = create_workout(data)
+    return result, status_code
+
+  @jwt_required()
+  def get(self):
+    """Get all workouts"""
+    result, status_code = get_workouts_by_member()
+    return result, status_code
+
+
+@workout_ns.route('/<int:workout_id>')
+class Workout(Resource):
+  @jwt_required()
+  def put(self, workout_id):
+    """Update an existing workout"""
+    data = request.get_json()
+    result, status_code = update_workout(workout_id, data)
+    return result, status_code
+
+  @jwt_required()
+  def delete(self, workout_id):
+    """Delete an existing workout"""
+    result, status_code = delete_workout(workout_id)
     return result, status_code
 
 

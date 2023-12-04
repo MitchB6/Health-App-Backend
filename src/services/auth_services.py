@@ -57,9 +57,7 @@ def create_coach(data):
 
 def update_coach(data):
   approved = bool(data.get('approved'))
-  coach = CoachInfo.query.get(data.get('coach_id'))
-  if coach is None:
-    return {"message": "Coach not found"}, 404
+  coach = CoachInfo.query.get_or_404(data.get('coach_id'))
 
   if approved:
     print("APPROVAL", approved)

@@ -24,12 +24,11 @@ class CoachInfo(db.Model):
       'Member', secondary='coaches_members_link', back_populates='coaches')
 
   def serialize(self):
-    """Serialize the CoachInfo object to a dictionary."""
     return {
         'coach_id': self.coach_id,
         'member_id': self.member_id,
         'specialization': self.specialization,
-        'price': float(self.price),  # Convert to float for JSON serialization
+        'price': float(self.price),
         'location': self.location,
         'schedule_general': self.schedule_general,
         'qualifications': self.qualifications,
