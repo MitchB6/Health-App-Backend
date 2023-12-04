@@ -63,6 +63,11 @@ coach_approval_model = auth_ns.model(
 
 
 @auth_ns.route('/signup')
+@auth_ns.doc(responses={
+    200: 'Success',
+    400: 'Invalid input',
+    409: 'Email already exists'
+})
 class SignUp(Resource):
   @auth_ns.expect(signup_model)
   @auth_ns.doc(responses={
@@ -78,6 +83,11 @@ class SignUp(Resource):
 
 
 @auth_ns.route('/coach_signup')
+@auth_ns.doc(responses={
+    200: 'Success',
+    400: 'Invalid input',
+    409: 'Email already exists'
+})
 class CoachSignUp(Resource):
 
   @jwt_required(optional=True)
@@ -130,6 +140,10 @@ class Login(Resource):
 
 @auth_ns.route('/refresh')
 class RefreshResource(Resource):
+  @auth_ns.doc(responses={
+      200: 'Success',
+      401: 'Invalid credentials'
+  })
   @auth_ns.expect(security='Bearer Auth')
   @jwt_required(refresh=True)
   def post(self):
