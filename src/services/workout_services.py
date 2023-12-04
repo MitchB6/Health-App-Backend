@@ -1,16 +1,22 @@
-from models.workout_model import Workout
+from flask_jwt_extended import get_jwt_identity
+from datetime import datetime
+
+from ..models.workout_model import Workout
 
 
 def create_workout(data):
-  # Create a new workout instance
+  current_member_id = get_jwt_identity()
+  workout_name = data.get('workout_name')
+  energy_level = data.get('energy_level')
+
+  # Validate workout
+
   workout = Workout(
-      member_id=data['member_id'],
-      workout_name=data['workout_name'],
-      workout_date=data['workout_date'],
-      energy_level=data['energy_level']
+      member_id=current_member_id,
+      workout_name=workout_name,
+      energy_level=energy_level
   )
 
-  # Save the workout to the database
   workout.save()
 
   return {"message": "Workout created successfully"}, 201

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from ..extensions import db
 from .workoutplanlink_model import WorkoutPlanLink
 
@@ -12,7 +14,7 @@ class Workout(db.Model):
   member_id = db.Column(db.Integer, db.ForeignKey(
       'members.member_id', ondelete='CASCADE'), nullable=False)
   workout_name = db.Column(db.String(255), nullable=False)
-  workout_date = db.Column(db.Date, nullable=False)
+  workout_date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
   energy_level = db.Column(db.Integer)
 
   member = db.relationship('Member', back_populates='workouts')
@@ -23,11 +25,10 @@ class Workout(db.Model):
   workout_exercises = db.relationship(
       'WorkoutExercise', back_populates='workout')
 
-  def save(self, commit=True):
+  def save(self):
     """Save or update a workout."""
     db.session.add(self)
-    if commit:
-      db.session.commit()
+    db.session.commit()
 
   def delete(self):
     """Delete a workout."""

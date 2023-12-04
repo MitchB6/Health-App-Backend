@@ -8,6 +8,7 @@ from .routes.member import member_ns
 from .routes.home import home_ns
 from .routes.exercise import exercise_ns
 from .routes.coach import coach_ns
+from .routes.workout import workout_ns
 
 import os
 import pkgutil
@@ -53,6 +54,7 @@ def create_app(config):
   api.add_namespace(home_ns)
   api.add_namespace(exercise_ns)
   api.add_namespace(coach_ns)
+  api.add_namespace(workout_ns)
 
   @app.shell_context_processor
   def make_shell_context():

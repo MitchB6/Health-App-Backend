@@ -18,7 +18,6 @@ exercise_model = exercise_ns.model(
 
 @exercise_ns.route('/')
 class ExerciseList(Resource):
-  # @exercise_ns.marshal_with(exercise_model)
   def get(self):
     """List all exercises"""
     muscle_group = request.args.get('muscle_group', None)
@@ -59,3 +58,30 @@ class Exercise(Resource):
     """Delete an exercise"""
     result, status_code = delete_exercise(id)
     return make_response(jsonify(result), status_code)
+
+
+@exercise_ns.route('/equipment')
+class GetEquipment(Resource):
+  @staticmethod
+  def get():
+    """Fetch all equipment"""
+    result, status_code = get_equipment()
+    return make_response(result, status_code)
+
+
+@exercise_ns.route('/muscle_group')
+class GetMuscleGroup(Resource):
+  @staticmethod
+  def get():
+    """Fetch all muscle groups"""
+    result, status_code = get_muscle_group()
+    return make_response(result, status_code)
+
+
+@exercise_ns.route('/sample_exercises')
+class GetSampleExercises(Resource):
+  @staticmethod
+  def get():
+    """Fetch sample exercises"""
+    result, status_code = get_sample_exercises()
+    return make_response(result, status_code)

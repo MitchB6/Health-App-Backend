@@ -1,4 +1,35 @@
+from flask import jsonify
 from ..models.exercise_model import Exercise
+
+muscle_group = ['Abdominals', 'Adductors', 'Biceps', 'Calves', 'Chest', 'Forearms',
+                'Glutes', 'Hamstrings', 'Lats', 'Lower Back', 'Middle Back', 'Traps',
+                'Neck', 'Quadriceps', 'Shoulders', 'Triceps'
+                ]
+
+equipment = ['Bands', 'Barbell', 'Kettlebells', 'Dumbbell', 'Other', 'Cable', 'Machine',
+             'Body Only', 'Medicine Ball', 'None', 'Exercise Ball', 'Foam Roll', 'E-Z Curl Bar']
+
+sample_exercises = ['Crunch',
+                    'Decline band press sit-up',
+                    'FYR2 Banded Frog Pump',
+                    'Band low-to-high twist',
+                    'Barbell roll-out',
+                    'Barbell Ab Rollout - On Knees',
+                    'Decline bar press sit-up',
+                    'Bench barbell roll-out'
+                    ]
+
+
+def get_equipment():
+  return jsonify(equipment), 200
+
+
+def get_muscle_group():
+  return jsonify(muscle_group), 200
+
+
+def get_sample_exercises():
+  return jsonify(sample_exercises), 200
 
 
 def marshal_exercise(exercise):
