@@ -1,13 +1,13 @@
 from flask import jsonify
-from flask_restx import Resource
+from flask_restx import Resource, Namespace
 
-from .serializers import home_ns
+home_ns=Namespace('home',description='A namespace for Home')
 
 @home_ns.route('/')
 class HomeResource(Resource):
-    def get(self):
-        """Homepage"""
-        return jsonify({"message":"hello world"})
+  def get(self):
+    """Homepage"""
+    return jsonify({"message":"hello world"})
 
 @home_ns.route('/health')
 class HealthResource(Resource):
