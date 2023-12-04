@@ -49,7 +49,7 @@ def update_member_settings(data):
   member = Member.query.get_or_404(current_member_id)
 
   allowed_fields_member = ['email']
-  allowed_fields_personal_info = ['username', 'phone', 'first_name', 'last_name', 'city', 'state', 'zipcode',
+  allowed_fields_personal_info = ['username', 'phone', 'first_name', 'last_name', 'city', 'state', 'zip_code',
                                   'birthdate', 'height', 'weight', 'age', 'gender']
   for key, value in data.items():
     if key in allowed_fields_member and value is not None:
