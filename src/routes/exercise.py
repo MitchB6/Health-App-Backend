@@ -60,6 +60,42 @@ class Exercise(Resource):
     return make_response(jsonify(result), status_code)
 
 
+@exercise_ns.route('/activate/all')
+class ActivateAllExercises(Resource):
+  @jwt_required()
+  @admin_required
+  def put(self):
+    result, status_code = activate_all_exercises()
+    return make_response(jsonify(result), status_code)
+
+
+@exercise_ns.route('/deactivate/all')
+class DeactivateAllExercises(Resource):
+  @jwt_required()
+  @admin_required
+  def put(self):
+    result, status_code = deactivate_all_exercises()
+    return make_response(jsonify(result), status_code)
+
+
+@exercise_ns.route('/activate/<int:id>')
+class ActivateExerciseById(Resource):
+  @jwt_required()
+  @admin_required
+  def put(self, id):
+    result, status_code = activate_exercise_by_id(id)
+    return make_response(jsonify(result), status_code)
+
+
+@exercise_ns.route('/deactivate/<int:id>')
+class DeactivateExerciseById(Resource):
+  @jwt_required()
+  @admin_required
+  def put(self, id):
+    result, status_code = deactivate_exercise_by_id(id)
+    return make_response(jsonify(result), status_code)
+
+
 @exercise_ns.route('/equipment')
 class GetEquipment(Resource):
   @staticmethod

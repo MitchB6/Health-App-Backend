@@ -53,14 +53,6 @@ change_password_model = auth_ns.model(
     }
 )
 
-coach_approval_model = auth_ns.model(
-    "CoachApproval",
-    {
-        "member_id": fields.Integer(required=True),
-        "approved": fields.Boolean(required=True)
-    }
-)
-
 
 @auth_ns.route('/signup')
 @auth_ns.doc(responses={
@@ -89,7 +81,6 @@ class SignUp(Resource):
     409: 'Email already exists'
 })
 class CoachSignUp(Resource):
-
   @jwt_required(optional=True)
   @auth_ns.expect(coach_signup_model)
   def post(self):
@@ -103,22 +94,6 @@ class CoachSignUp(Resource):
       else:
         return make_response(jsonify({'message': 'member_id not provided'}), 400)
     result, status_code = create_coach(data)
-    return make_response(jsonify(result), status_code)
-
-  @jwt_required()
-  @admin_required
-  def get(self):
-    """Get all coach forms"""
-    result, status_code = get_all_coach_forms()
-    return make_response(jsonify(result), status_code)
-
-  @jwt_required()
-  @admin_required
-  @auth_ns.expect(coach_approval_model)
-  def put(self):
-    """Approve coach form"""
-    data = request.get_json()
-    result, status_code = update_coach(data)
     return make_response(jsonify(result), status_code)
 
 

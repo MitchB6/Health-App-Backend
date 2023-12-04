@@ -1,5 +1,6 @@
 from flask import jsonify
 from ..models.exercise_model import Exercise
+from ..extensions import db
 
 muscle_group = ['Abdominals', 'Adductors', 'Biceps', 'Calves', 'Chest', 'Forearms',
                 'Glutes', 'Hamstrings', 'Lats', 'Lower Back', 'Middle Back', 'Traps',
@@ -98,5 +99,43 @@ def delete_exercise(exercise_id):
     exercise = Exercise.query.get_or_404(exercise_id)
     exercise.delete()
     return {"message": "Exercise deleted successfully"}, 200
+  except Exception as e:
+    return {"message": str(e)}, 400
+
+
+def activate_all_exercises():
+  try:
+    # Activate all exercises
+    Exercise.query.update({"is_active": True})
+    db.session.commit()
+    return {"message": "All exercises activated successfully"}, 200
+  except Exception as e:
+    return {"message": str(e)}, 500
+
+
+def deactivate_all_exercises():
+  try:
+    # Deactivate all exercises
+    Exercise.query.update({"is_active": False})
+    db.session.commit()
+    return {"message": "All exercises deactivated successfully"}, 200
+  except Exception as e:
+    return {"message": str(e)}, 500
+
+
+def activate_exercise_by_id(id):
+  try:
+    exercise = Exercise.query.get_or_404(id)
+    exercise.update(is_active=True)
+    return {"message": "Exercise activated successfully"}, 200
+  except Exception as e:
+    return {"message": str(e)}, 400
+
+
+def deactivate_exercise_by_id(id):
+  try:
+    exercise = Exercise.query.get_or_404(id)
+    exercise.update(is_active=False)
+    return {"message": "Exercise deactivated successfully"}, 200
   except Exception as e:
     return {"message": str(e)}, 400

@@ -55,27 +55,6 @@ def create_coach(data):
   return {"message": "Coach form submitted successfully"}, 200
 
 
-def update_coach(data):
-  approved = bool(data.get('approved'))
-  coach = CoachInfo.query.get_or_404(data.get('coach_id'))
-
-  if approved:
-    print("APPROVAL", approved)
-    coach.approved = approved
-    coach.member.role_id = 1
-    db.session.commit()
-    return {"message": "Coach approved"}, 200
-  else:
-    db.CoachInfo.delete(coach)
-    return {"message": "Coach denied"}, 200
-
-
-def get_all_coach_forms():
-  forms = CoachInfo.query.filter_by(approved=False).all()
-  serialized_forms = [form.serialize() for form in forms]
-  return serialized_forms, 200
-
-
 def change_password(data):
   get_jwt_identity()
   current_member_id = get_jwt_identity()
