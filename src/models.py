@@ -529,3 +529,19 @@ class WorkoutExercise(db.Model):
   def find_by_exercise_id(cls, exercise_id):
     """Finds all workouts for a given exercise ID."""
     return cls.query.filter_by(exercise_id=exercise_id).all()
+
+
+# The `survey` class represents the survey data in a database, with methods for saving, and deleting survey data
+
+class survey(db.Model):
+  __tablename__ = 'survey'
+
+  survey_id = db.Column(db.Integer, primary_key=True)
+  member_id = db.Column(db.Integer, db.ForeignKey('member.member_id'), nullable=False)
+  date = db.Column(db.DateTime, default=db.func.current_timestamp())
+  energy_level = db.Column(db.Integer)
+  mood_level = db.Column(db.Integer) 
+  hydration_level = db.Column(db.Decimal(10,1))  
+  calories_intake = db.Column(db.Integer) 
+  recorded_at = db.Column(db.DateTime, default=db.func.current_timestamp()) 
+  
