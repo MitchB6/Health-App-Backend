@@ -4,26 +4,26 @@ from ..extensions import db
 
 
 def update_coach(data):
-  try:
-    approved = bool(data.get('approved'))
-    coach_id = data.get('coach_id')
 
-    if coach_id is None:
-      return {"message": "Coach not found"}, 404
+  approved = bool(data.get('approved'))
+  coach_id = data.get('coach_id')
 
-    coach = CoachInfo.query.get_or_404(coach_id, description="Coach not found")
+  if coach_id is None:
+    return {"message": "Coach not found"}, 404
 
-    if approved == True:
-      print("APPROVAL", approved)
-      coach.approved = approved
-      coach.member.role_id = 1
-      db.session.commit()
-      return {"message": "Coach approved"}, 200
-    else:
-      db.CoachInfo.delete(coach)
-      return {"message": "Coach denied"}, 200
-  except Exception as e:
-    return {"error": str(e)}, 500
+  coach = CoachInfo.query.get_or_404(coach_id, description="Coach not found")
+
+  if approved == True:
+    print("APPROVAL", approved)
+    coach.approved = approved
+    coach.member.role_id = 1
+    db.session.commit()
+    return {"message": "Coach approved"}, 200
+  else:
+    print("DENIED", approved)
+    db.session.delete(coach)
+    db.session.commit()
+    return {"message": "Coach denied"}, 200
 
 
 def get_all_coach_forms():

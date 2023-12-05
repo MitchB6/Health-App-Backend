@@ -10,7 +10,7 @@ admin_ns = Namespace('admin', description='A namespace for Admin')
 coach_approval_model = admin_ns.model(
     "CoachApproval",
     {
-        "member_id": fields.Integer(required=True),
+        "coach_id": fields.Integer(required=True),
         "approved": fields.Boolean(required=True)
     }
 )

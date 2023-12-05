@@ -40,14 +40,9 @@ class CoachInfo(db.Model):
         'approved': self.approved
     }
 
-  def save(self, ):
+  def save(self):
     """Saves coach information to the database."""
     db.session.add(self)
-    db.session.commit()
-
-  def delete(self):
-    """Deletes coach information from the database."""
-    db.session.delete(self)
     db.session.commit()
 
   def update(self, **kwargs):
