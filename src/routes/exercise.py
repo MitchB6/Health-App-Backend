@@ -13,16 +13,27 @@ exercise_model = exercise_ns.model(
         'description': fields.String(),
         'muscle_group': fields.String(),
         'equipment': fields.String()
-    })
+    }
+)
+
+exercise_list_args = exercise_ns.model(
+    'ExerciseListArgs', {
+        'name': fields.String(description='Filter by name'),
+        'muscle_group': fields.String(description='Filter by muscle group'),
+        'equipment': fields.String(description='Filter by equipment')
+    }
+)
 
 
 @exercise_ns.route('/')
 class ExerciseList(Resource):
+  @exercise_ns.expect(exercise_list_args, validate=True, optional=True)
   def get(self):
     """List all exercises"""
+    name = request.args.get('name', None)
     muscle_group = request.args.get('muscle_group', None)
     equipment = request.args.get('equipment', None)
-    result, status_code = get_all_exercises(muscle_group, equipment)
+    result, status_code = search_exercises(name, muscle_group, equipment)
     return make_response(jsonify(result), status_code)
 
   @jwt_required()
@@ -37,12 +48,16 @@ class ExerciseList(Resource):
 
 @exercise_ns.route('/<int:id>')
 class Exercise(Resource):
-  def get(self):
-    """Fetch a single exercise"""
-    data = request.get_json()
-    result, status_code = get_exercise_by_id(data)
+  @jwt_required()
+  @admin_required
+  def delete(self, id):
+    """Delete an exercise"""
+    result, status_code = delete_exercise(id)
     return make_response(jsonify(result), status_code)
 
+
+@exercise_ns.route('/update')
+class ExerciseUpdate(Resource):
   @jwt_required()
   @admin_required
   @exercise_ns.expect(exercise_model)
@@ -50,13 +65,6 @@ class Exercise(Resource):
     """Update an exercise"""
     data = request.get_json()
     result, status_code = update_exercise(id, data)
-    return make_response(jsonify(result), status_code)
-
-  @jwt_required()
-  @admin_required
-  def delete(self, id):
-    """Delete an exercise"""
-    result, status_code = delete_exercise(id)
     return make_response(jsonify(result), status_code)
 
 

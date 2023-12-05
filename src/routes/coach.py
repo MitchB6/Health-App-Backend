@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import jsonify, make_response
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 

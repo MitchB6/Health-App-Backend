@@ -13,7 +13,7 @@ def update_coach(data):
 
     coach = CoachInfo.query.get_or_404(coach_id, description="Coach not found")
 
-    if approved:
+    if approved == True:
       print("APPROVAL", approved)
       coach.approved = approved
       coach.member.role_id = 1
