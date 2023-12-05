@@ -1,3 +1,4 @@
+from ..models.personalinfo_model import PersonalInfo
 from ..extensions import db
 
 # The CoachInfo class represents coach information in a database and provides methods for saving,
@@ -24,9 +25,13 @@ class CoachInfo(db.Model):
       'Member', secondary='coaches_members_link', back_populates='coaches')
 
   def serialize(self):
+    personal_info = PersonalInfo.query.filter_by(
+        member_id=self.member_id).first()
     return {
         'coach_id': self.coach_id,
         'member_id': self.member_id,
+        'first_name': personal_info.first_name if personal_info else None,
+        'last_name': personal_info.last_name if personal_info else None,
         'specialization': self.specialization,
         'price': float(self.price),
         'location': self.location,

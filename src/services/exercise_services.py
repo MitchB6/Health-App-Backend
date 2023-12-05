@@ -1,36 +1,8 @@
 from flask import jsonify
+import random
+
 from ..models.exercise_model import Exercise
 from ..extensions import db
-
-muscle_group = ['Abdominals', 'Adductors', 'Biceps', 'Calves', 'Chest', 'Forearms',
-                'Glutes', 'Hamstrings', 'Lats', 'Lower Back', 'Middle Back', 'Traps',
-                'Neck', 'Quadriceps', 'Shoulders', 'Triceps'
-                ]
-
-equipment = ['Bands', 'Barbell', 'Kettlebells', 'Dumbbell', 'Other', 'Cable', 'Machine',
-             'Body Only', 'Medicine Ball', 'None', 'Exercise Ball', 'Foam Roll', 'E-Z Curl Bar']
-
-sample_exercises = ['Crunch',
-                    'Decline band press sit-up',
-                    'FYR2 Banded Frog Pump',
-                    'Band low-to-high twist',
-                    'Barbell roll-out',
-                    'Barbell Ab Rollout - On Knees',
-                    'Decline bar press sit-up',
-                    'Bench barbell roll-out'
-                    ]
-
-
-def get_equipment():
-  return jsonify(equipment), 200
-
-
-def get_muscle_group():
-  return jsonify(muscle_group), 200
-
-
-def get_sample_exercises():
-  return jsonify(sample_exercises), 200
 
 
 def marshal_exercise(exercise):
@@ -42,10 +14,44 @@ def marshal_exercise(exercise):
   }
 
 
-def get_all_exercises(muscle_group=None, equipment=None):
+def get_equipment():
+  try:
+    equipment = db.session.query(Exercise.equipment).distinct().all()
+    equipment = [result[0] for result in equipment]
+    return jsonify(equipment), 200
+  except Exception as e:
+    return {"message": str(e)}, 500
+
+
+def get_muscle_group():
+  try:
+    muscle_groups = db.session.query(Exercise.muscle_group).distinct().all()
+    muscle_groups = [result[0] for result in muscle_groups]
+    return jsonify(muscle_groups), 200
+  except Exception as e:
+    return {"message": str(e)}, 500
+
+
+def get_sample_exercises():
+  try:
+    # Get a list of all exercise names
+    all_exercise_names = Exercise.query.with_entities(Exercise.name).all()
+    all_exercise_names = [name[0] for name in all_exercise_names]
+
+    # Randomly select 10 unique exercise names
+    sample_exercise_names = random.sample(all_exercise_names, 10)
+
+    return jsonify(sample_exercise_names), 200
+  except Exception as e:
+    return {"message": str(e)}, 500
+
+
+def search_exercises(name=None, muscle_group=None, equipment=None):
   """Get all exercises"""
   try:
     query = Exercise.query
+    if name:
+      query = query.filter(Exercise.name.ilike(f"%{name}%"))
     if muscle_group:
       query = query.filter(Exercise.muscle_group == muscle_group)
     if equipment:
@@ -70,17 +76,7 @@ def create_exercise(data):
 
     return {"message": f"Exercise created successfully: {new_exercise.exercise_id}"}, 201
   except Exception as e:
-    return {"message": str(e)}, 400
-
-
-def get_exercise_by_id(id):
-  """Get an exercise by its id"""
-  try:
-    exercise = Exercise.query.get_or_404(id)
-    exercise_data = marshal_exercise(exercise)
-    return exercise_data, 200
-  except Exception as e:
-    return {"message": str(e)}, 404
+    return {"message": str(e)}, 500
 
 
 def update_exercise(exercise_id, data):
@@ -100,7 +96,7 @@ def delete_exercise(exercise_id):
     exercise.delete()
     return {"message": "Exercise deleted successfully"}, 200
   except Exception as e:
-    return {"message": str(e)}, 400
+    return {"message": str(e)}, 500
 
 
 def activate_all_exercises():
@@ -129,7 +125,7 @@ def activate_exercise_by_id(id):
     exercise.update(is_active=True)
     return {"message": "Exercise activated successfully"}, 200
   except Exception as e:
-    return {"message": str(e)}, 400
+    return {"message": str(e)}, 500
 
 
 def deactivate_exercise_by_id(id):
@@ -138,4 +134,4 @@ def deactivate_exercise_by_id(id):
     exercise.update(is_active=False)
     return {"message": "Exercise deactivated successfully"}, 200
   except Exception as e:
-    return {"message": str(e)}, 400
+    return {"message": str(e)}, 500
