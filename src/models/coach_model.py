@@ -51,8 +51,3 @@ class CoachInfo(db.Model):
       if hasattr(self, key) and value is not None:
         setattr(self, key, value)
     db.session.commit()
-
-  @classmethod
-  def all_coaches(cls):
-    """Returns all registered coaches."""
-    return cls.query.all()

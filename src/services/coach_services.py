@@ -4,13 +4,21 @@ from ..extensions import db
 
 
 def get_all_coaches():
-  coaches = CoachInfo.all_coaches()
+  coaches = CoachInfo.query.filter_by(approved=True).all()
   serialized_coaches = [coach.serialize() for coach in coaches]
   return serialized_coaches, 200
 
 
-def get_coach(coach_id):
-  coach = CoachInfo.query.get(coach_id)
+def get_coach(specialization=None, price=0.00, location=None):
+  query = CoachInfo.query
+  if specialization:
+    query = CoachInfo.query.filter_by(specialization=specialization).first()
+  if price > 0.00:
+    query = CoachInfo.query.filter_by(price=price).first()
+  if location:
+    query = CoachInfo.query.filter_by(location=location).first()
+
+  coach = query.all()
   if coach:
     serialized_coach = coach.serialize()
     return serialized_coach, 200

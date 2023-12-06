@@ -18,6 +18,15 @@ class CoachesMembersLink(db.Model):
   last_updated = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(
   ), onupdate=db.func.current_timestamp())
 
+  def serialize(self):
+    return {
+        "link_id": self.link_id,
+        "coach_id": self.coach_id,
+        "member_id": self.member_id,
+        "status": self.status,
+        "last_updated": self.last_updated,
+    }
+
   @classmethod
   def create_link(cls, coach_id, member_id):
     """Add new link if DNE"""

@@ -14,8 +14,8 @@ class Workout(db.Model):
   member_id = db.Column(db.Integer, db.ForeignKey(
       'members.member_id', ondelete='CASCADE'), nullable=False)
   workout_name = db.Column(db.String(255), nullable=False)
-  workout_date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-  energy_level = db.Column(db.Integer)
+  created_at = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+  last_modified = db.Column(db.Date, nullable=False, default=datetime.utcnow)
 
   member = db.relationship('Member', back_populates='workouts')
   workout_plan_links = db.relationship(
@@ -24,6 +24,15 @@ class Workout(db.Model):
       'WorkoutStat', back_populates='workout', order_by='WorkoutStat.date')
   workout_exercises = db.relationship(
       'WorkoutExercise', back_populates='workout')
+
+  def serialize(self):
+    return {
+        'workout_id': self.workout_id,
+        'member_id': self.member_id,
+        'workout_name': self.workout_name,
+        'created_at': self.created_at,
+        'last_modified': self.last_modified
+    }
 
   def save(self):
     """Save or update a workout."""
@@ -56,3 +65,11 @@ class Workout(db.Model):
       db.session.delete(link)
       if commit:
         db.session.commit()
+
+  def update_link_sequence(self, plan_id, sequence):
+    """Update the sequence of a workout in a workout plan."""
+    link = WorkoutPlanLink.query.filter_by(
+        workout_id=self.workout_id, plan_id=plan_id).first()
+    if link:
+      link.sequence = sequence
+      db.session.commit()
