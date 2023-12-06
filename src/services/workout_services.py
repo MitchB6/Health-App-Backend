@@ -26,6 +26,8 @@ def update_workout(workout_id, data):
   # Find the workout by ID
   workout = Workout.query.get_or_404(workout_id)
 
+  # Validate workout update
+
   # Update workout attributes
   workout.workout_name = data.get('workout_name', workout.workout_name)
   workout.workout_date = data.get('workout_date', workout.workout_date)
@@ -50,6 +52,8 @@ def delete_workout(workout_id):
 def get_workouts_by_member(member_id):
   # Find all workouts for a specific member
   workouts = Workout.find_by_member(member_id)
+
+  # Validate member
 
   # Serialize the workouts
   serialized_workouts = [workout.serialize() for workout in workouts]

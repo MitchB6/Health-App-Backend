@@ -48,35 +48,29 @@ def get_sample_exercises():
 
 def search_exercises(name=None, muscle_group=None, equipment=None):
   """Get all exercises"""
-  try:
-    query = Exercise.query
-    if name:
-      query = query.filter(Exercise.name.ilike(f"%{name}%"))
-    if muscle_group:
-      query = query.filter(Exercise.muscle_group == muscle_group)
-    if equipment:
-      query = query.filter(Exercise.equipment == equipment)
+  query = Exercise.query
+  if name:
+    query = query.filter(Exercise.name.ilike(f"%{name}%"))
+  if muscle_group:
+    query = query.filter(Exercise.muscle_group == muscle_group)
+  if equipment:
+    query = query.filter(Exercise.equipment == equipment)
 
-    exercises = query.all()
-    exercises_data = [marshal_exercise(exercise) for exercise in exercises]
-    return exercises_data, 200
-  except Exception as e:
-    return {"message": str(e)}, 500
+  exercises = query.all()
+  exercises_data = [marshal_exercise(exercise) for exercise in exercises]
+  return exercises_data, 200
 
 
 def create_exercise(data):
   """Create an exercise"""
-  try:
-    new_exercise = Exercise(
-        name=str(data["name"]),
-        description=str(data.get("description")),
-        muscle_group=str(data.get("muscle_group")),
-    )
-    new_exercise.save()
+  new_exercise = Exercise(
+      name=str(data["name"]),
+      description=str(data.get("description")),
+      muscle_group=str(data.get("muscle_group")),
+  )
+  new_exercise.save()
 
-    return {"message": f"Exercise created successfully: {new_exercise.exercise_id}"}, 201
-  except Exception as e:
-    return {"message": str(e)}, 500
+  return {"message": f"Exercise created successfully: {new_exercise.exercise_id}"}, 201
 
 
 def update_exercise(exercise_id, data):

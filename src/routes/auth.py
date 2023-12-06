@@ -3,7 +3,6 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
 
 from ..services.auth_services import *
-from ..services.decorators import admin_required
 
 auth_ns = Namespace('auth', description="A namespace for Authentication")
 

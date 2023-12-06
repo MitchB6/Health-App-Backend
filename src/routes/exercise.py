@@ -16,18 +16,13 @@ exercise_model = exercise_ns.model(
     }
 )
 
-exercise_list_args = exercise_ns.model(
-    'ExerciseListArgs', {
-        'name': fields.String(description='Filter by name'),
-        'muscle_group': fields.String(description='Filter by muscle group'),
-        'equipment': fields.String(description='Filter by equipment')
-    }
-)
-
 
 @exercise_ns.route('/')
 class ExerciseList(Resource):
-  @exercise_ns.expect(exercise_list_args, validate=True, optional=True)
+  @exercise_ns.doc(params={
+      'name': 'Name of the exercise',
+      'muscle_group': 'Muscle group of the exercise',
+      'equipment': 'Equipment required for the exercise'})
   def get(self):
     """List all exercises"""
     name = request.args.get('name', None)
