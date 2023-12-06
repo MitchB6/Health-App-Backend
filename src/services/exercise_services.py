@@ -5,15 +5,6 @@ from ..models.exercise_model import Exercise
 from ..extensions import db
 
 
-def marshal_exercise(exercise):
-  return {
-      'name': exercise.name,
-      'description': exercise.description,
-      'muscle_group': exercise.muscle_group,
-      'equipment': exercise.equipment
-  }
-
-
 def get_equipment():
   try:
     equipment = db.session.query(Exercise.equipment).distinct().all()
@@ -57,7 +48,7 @@ def search_exercises(name=None, muscle_group=None, equipment=None):
     query = query.filter(Exercise.equipment == equipment)
 
   exercises = query.all()
-  exercises_data = [marshal_exercise(exercise) for exercise in exercises]
+  exercises_data = [exercise.serialize() for exercise in exercises]
   return exercises_data, 200
 
 

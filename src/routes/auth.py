@@ -99,12 +99,14 @@ class CoachSignUp(Resource):
 @auth_ns.route('/login')
 class Login(Resource):
   @auth_ns.expect(login_model)
-  @auth_ns.doc(responses={
-      200: 'Success',
-      400: 'Missing required fields',
-      401: 'Invalid credentials',
-      409: 'User does not exist'
-  })
+  @auth_ns.doc(
+      responses={
+          200: 'Success',
+          400: 'Missing required fields',
+          401: 'Invalid credentials',
+          409: 'User does not exist'
+      }
+  )
   def post(self):
     """User login using email and password"""
     data = request.get_json()

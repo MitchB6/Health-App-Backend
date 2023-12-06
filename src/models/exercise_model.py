@@ -17,6 +17,16 @@ class Exercise(db.Model):
   workout_exercises = db.relationship(
       "WorkoutExercise", back_populates="exercise")
 
+  def serialize(self):
+    return {
+        "exercise_id": self.exercise_id,
+        "name": self.name,
+        "description": self.description,
+        "muscle_group": self.muscle_group,
+        "equipment": self.equipment,
+        "is_active": self.is_active,
+    }
+
   def save(self):
     """Saves the exercise to the database."""
     db.session.add(self)
