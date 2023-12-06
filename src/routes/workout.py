@@ -21,7 +21,15 @@ workout_exercise_link = workout_ns.model('Workout_Exercise', {
     'notes': fields.String(description='Additional notes'),
 })
 
-update_workout_exercise_link = workout_ns.model('Workout_Exercise', {
+create_workout_exercise_link = workout_ns.model('Create Workout_Exercise', {
+    'exercise_id': fields.Integer(description='Exercise ID'),
+    'sets': fields.Integer(description='Number of sets'),
+    'reps': fields.Integer(description='Number of repetitions'),
+    'sequence': fields.Integer(description='Exercise sequence'),
+    'notes': fields.String(description='Additional notes'),
+})
+
+update_workout_exercise_link = workout_ns.model('Update Workout_Exercise', {
     'workout_exercise_id': fields.Integer(description='Workout Exercise ID'),
     'sets': fields.Integer(description='Number of sets'),
     'reps': fields.Integer(description='Number of repetitions'),
@@ -83,7 +91,7 @@ class WorkoutExercises(Resource):
     return make_response(result, status_code)
 
   @jwt_required()
-  @workout_ns.expect(workout_exercise_link)
+  @workout_ns.expect(create_workout_exercise_link)
   def post(self, workout_id):
     """Add an exercise to a workout"""
     data = request.get_json()
