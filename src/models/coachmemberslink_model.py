@@ -4,32 +4,41 @@ from .member_model import Member
 
 # The `CoachesMembersLink` class is a model that represents the link between coaches and members in a
 # database, providing methods to create, remove, and find links between them.
+
+
 class CoachesMembersLink(db.Model):
   __tablename__ = 'coaches_members_link'
 
   link_id = db.Column(db.Integer, primary_key=True)
-  coach_id = db.Column(db.Integer, db.ForeignKey('coach_info.coach_id', ondelete='CASCADE'), nullable=False)
-  member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)  
-  
+  coach_id = db.Column(db.Integer, db.ForeignKey(
+      'coach_info.coach_id', ondelete='CASCADE'), nullable=False)
+  member_id = db.Column(db.Integer, db.ForeignKey(
+      'members.member_id', ondelete='CASCADE'), nullable=False)
+  status = db.Column(db.String(20), nullable=False, default='pending')
+  last_updated = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(
+  ), onupdate=db.func.current_timestamp())
+
   @classmethod
   def create_link(cls, coach_id, member_id):
     """Add new link if DNE"""
-    existing_link = cls.query.filter_by(coach_id=coach_id, member_id=member_id).first()
+    existing_link = cls.query.filter_by(
+        coach_id=coach_id, member_id=member_id).first()
     if not existing_link:
       new_link = cls(coach_id=coach_id, member_id=member_id)
       db.session.add(new_link)
       db.session.commit()
       return new_link
     return existing_link  # or handle this case as needed
-  
+
   @classmethod
   def remove_link(cls, coach_id, member_id):
     """Remove link if exists"""
-    link_to_remove = cls.query.filter_by(coach_id=coach_id, member_id=member_id).first()
+    link_to_remove = cls.query.filter_by(
+        coach_id=coach_id, member_id=member_id).first()
     if link_to_remove:
       db.session.delete(link_to_remove)
       db.session.commit()
-  
+
   @classmethod
   def find_coaches_by_member(cls, member_id):
     """Find coaches for specific member"""
