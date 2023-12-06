@@ -25,11 +25,9 @@ def get_muscle_group():
 
 def get_sample_exercises():
   try:
-    # Get a list of all exercise names
     all_exercise_names = Exercise.query.with_entities(Exercise.name).all()
     all_exercise_names = [name[0] for name in all_exercise_names]
 
-    # Randomly select 10 unique exercise names
     sample_exercise_names = random.sample(all_exercise_names, 10)
 
     return jsonify(sample_exercise_names), 200

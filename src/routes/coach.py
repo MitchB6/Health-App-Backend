@@ -9,7 +9,7 @@ from ..services.decorators import coach_required
 coach_ns = Namespace('coaches', description="A namespace for coaches")
 
 hire_request_model = coach_ns.model('HireRequest', {
-    'client_name': fields.String(required=True, description='Client name'),
+    'member_id': fields.String(required=True, description='Client name'),
     'coach_id': fields.Integer(required=True, description='Coach ID'),
 })
 

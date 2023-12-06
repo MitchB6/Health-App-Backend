@@ -7,7 +7,7 @@ from ..services.decorators import admin_required
 
 exercise_ns = Namespace('exercise', description='A namespace for Exercise')
 
-exercise_model = exercise_ns.model(
+create_exercise_model = exercise_ns.model(
     'Exercise', {
         'name': fields.String(required=True),
         'description': fields.String(),
@@ -33,7 +33,7 @@ class ExerciseList(Resource):
 
   @jwt_required()
   @admin_required
-  @exercise_ns.expect(exercise_model)
+  @exercise_ns.expect(create_exercise_model)
   def post(self):
     """Create a new exercaise"""
     data = request.get_json()
@@ -55,7 +55,7 @@ class Exercise(Resource):
 class ExerciseUpdate(Resource):
   @jwt_required()
   @admin_required
-  @exercise_ns.expect(exercise_model)
+  @exercise_ns.expect(create_exercise_model)
   def put(self, id):
     """Update an exercise"""
     data = request.get_json()
