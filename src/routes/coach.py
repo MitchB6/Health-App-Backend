@@ -34,6 +34,6 @@ class HireRequestResource(Resource):
   @coach_ns.expect(hire_request_model)
   def post(self):
     """Request to hire a coach."""
-    data = request.json
+    data = request.json()
     result, status_code = link_request(data)
     return make_response(jsonify(result), status_code)
