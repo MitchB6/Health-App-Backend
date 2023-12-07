@@ -3,34 +3,34 @@ from ..models.coachmemberslink_model import CoachesMembersLink
 from ..extensions import db
 
 
-def get_all_coaches():
-  coaches = CoachInfo.query.filter_by(approved=True).all()
-  serialized_coaches = [coach.serialize() for coach in coaches]
-  return serialized_coaches, 200
+def search_coaches(specialization=None, price=0.00, location=None):
+  query = CoachInfo.query.filter_by(approved=True)
 
-
-def get_coach(specialization=None, price=0.00, location=None):
-  query = CoachInfo.query
   if specialization:
-    query = CoachInfo.query.filter_by(specialization=specialization).first()
-  if price > 0.00:
-    query = CoachInfo.query.filter_by(price=price).first()
-  if location:
-    query = CoachInfo.query.filter_by(location=location).first()
+    query = query.filter_by(specialization=specialization)
 
-  coach = query.all()
-  if coach:
-    serialized_coach = coach.serialize()
-    return serialized_coach, 200
+  if price is not None:
+    price = float(price)
+    if price > 0.00:
+      query = query.filter(CoachInfo.price <= price)
+
+  if location:
+    query = query.filter_by(location=location)
+
+  coaches = query.all()
+
+  if coaches:
+    serialized_coaches = [coach.serialize() for coach in coaches]
+    return serialized_coaches, 200
   else:
-    return {"message": "Coach not found"}, 404
+    return {"message": "No coaches found"}, 404
 
 
 def link_request(data):
-  client_name = data['client_name']
-  coach_id = data['coach_id']
+  member_id = data.get('member_id')
+  coach_id = data.get('coach_id')
 
-  if not client_name or not coach_id:
+  if not member_id or not coach_id:
     return {'message': 'Client name and coach ID are required'}, 400
 
   coach = CoachInfo.query.get(coach_id)
@@ -38,8 +38,12 @@ def link_request(data):
   if not coach:
     return {'message': 'Coach not found'}, 404
 
-  link_request = CoachesMembersLink(client_name=client_name, coach=coach)
-  db.session.add(link_request)
-  db.session.commit()
+  existing_link = CoachesMembersLink.query.filter_by(
+      coach_id=coach_id, member_id=member_id).first()
+
+  if not existing_link:
+    new_link = CoachesMembersLink(coach_id=coach.coach_id, member_id=member_id)
+    db.session.add(new_link)
+    db.session.commit()
 
   return {'message': 'Hire request submitted successfully'}, 201
