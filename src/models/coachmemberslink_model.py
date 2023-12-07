@@ -28,18 +28,6 @@ class CoachesMembersLink(db.Model):
     }
 
   @classmethod
-  def create_link(cls, coach_id, member_id):
-    """Add new link if DNE"""
-    existing_link = cls.query.filter_by(
-        coach_id=coach_id, member_id=member_id).first()
-    if not existing_link:
-      new_link = cls(coach_id=coach_id, member_id=member_id)
-      db.session.add(new_link)
-      db.session.commit()
-      return new_link
-    return existing_link  # or handle this case as needed
-
-  @classmethod
   def remove_link(cls, coach_id, member_id):
     """Remove link if exists"""
     link_to_remove = cls.query.filter_by(

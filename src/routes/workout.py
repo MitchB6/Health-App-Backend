@@ -1,8 +1,10 @@
+from ..extensions import db
 from flask import request, make_response
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
 
 from ..services.workout_services import *
+from ..models.workoutplanlink_model import WorkoutPlanLink
 
 workout_ns = Namespace('workouts', description='Workout related operations')
 
@@ -35,6 +37,13 @@ update_workout_exercise_link = workout_ns.model('Update Workout_Exercise', {
     'reps': fields.Integer(description='Number of repetitions'),
     'sequence': fields.Integer(description='Exercise sequence'),
     'notes': fields.String(description='Additional notes'),
+})
+
+
+add_workout_to_plan_model = workout_ns.model('AddWorkoutToPlan', {
+    'plan_id': fields.Integer(required=True, description='ID of the workout plan'),
+    'workout_id': fields.Integer(required=True, description='ID of the workout to add'),
+    'sequence': fields.Integer(required=True, description='Sequence of the workout in the plan'),
 })
 
 
@@ -107,11 +116,9 @@ class WorkoutExercises(Resource):
     return make_response(result, status_code)
 
   @jwt_required()
-  @workout_ns.doc(params={'workout_exercise_id': 'Workout Exercise ID', 'workout_id': 'Workout ID'})
+  @workout_ns.doc(params={'workout_exercise_id': 'Workout Exercise ID'})
   def delete(self, workout_id):
     """Delete an exercise from a workout"""
     workout_exercise_id = request.args.get('workout_exercise_id')
-    workout_id = request.args.get('workout_id')
-    result, status_code = delete_exercise_from_workout(
-        workout_id, workout_exercise_id)
+    result, status_code = delete_exercise_from_workout(workout_exercise_id)
     return make_response(result, status_code)

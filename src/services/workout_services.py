@@ -98,7 +98,7 @@ def update_exercise_in_workout(workout_exercise_id, data):
     return {"message": "Exercise not found in workout"}, 404
 
 
-def delete_exercise_from_workout(workout_id, workout_exercise_id):
+def delete_exercise_from_workout(workout_exercise_id):
   exercise = WorkoutExercise.query.filter_by(
       workout_exercise_id=workout_exercise_id).first()
   if exercise:

@@ -17,18 +17,15 @@ hire_request_model = coach_ns.model('HireRequest', {
 @coach_ns.route('/')
 class AllCoaches(Resource):
   @jwt_required()
+  @coach_ns.doc(params={'specialization': 'Specialization of coach',
+                        'price': 'Price of coach',
+                        'location': 'Location of coach'})
   def get(self):
     """Get all coaches."""
-    result, status_code = get_all_coaches()
-    return make_response(jsonify(result), status_code)
-
-
-@coach_ns.route('/<int:coach_id>')
-class CoachDetails(Resource):
-  @jwt_required()
-  def get(self, coach_id):
-    """Get coach details by coach_id."""
-    result, status_code = get_coach(coach_id)
+    specialization = request.args.get('specialization', None)
+    price = request.args.get('price', None)
+    location = request.args.get('location', None)
+    result, status_code = search_coaches(specialization, price, location)
     return make_response(jsonify(result), status_code)
 
 
@@ -36,6 +33,7 @@ class CoachDetails(Resource):
 class HireRequestResource(Resource):
   @coach_ns.expect(hire_request_model)
   def post(self):
-    data = request.json()
+    """Request to hire a coach."""
+    data = request.json
     result, status_code = link_request(data)
     return make_response(jsonify(result), status_code)
