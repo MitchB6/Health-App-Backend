@@ -1,6 +1,8 @@
 from flask import jsonify, request, make_response
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
+from ..extensions import socketio
+from flask_socketio import emit
 
 from ..services.auth_services import *
 
@@ -41,6 +43,14 @@ login_model = auth_ns.model(
         "role_id": fields.Integer(default=0, required=True),
         "email": fields.String(default="bill@email.com", required=True),
         "password": fields.String(default="12345678", required=True)
+    }
+)
+
+chat_model = auth_ns.model(
+    "Login",
+    {
+        "username": fields.String(required=True),
+        "recipient": fields.String(required=True),
     }
 )
 
@@ -113,6 +123,31 @@ class Login(Resource):
     result, status_code = login_user(data)
     return make_response(jsonify(result), status_code)
 
+@auth_ns.route('/chat')
+class Chat(Resource):
+#   @auth_ns.expect(chat_model)
+#   @auth_ns.doc(
+#       responses={
+#           200: 'Success',
+#           400: 'Missing required fields',
+#           401: 'Invalid credentials',
+#           409: 'User does not exist'
+#       }
+#   )
+  def post(self):
+#     """Send chat with username and recepent username"""
+#     data = request.get_json()
+#     result, status_code = login_user(data)
+#    return make_response(jsonify(result), status_code)
+        print("just checkin")
+        emit('connect')
+        return jsonify({"message":"this really worked????"})
+
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected \n')
+    print('Client connected \n')
+    print('Client connected \n')
 
 @auth_ns.route('/refresh')
 class RefreshResource(Resource):

@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
-from .extensions import db, api, migrate
+from .extensions import db, api, migrate, socketio
 from .routes.auth import auth_ns
 from .routes.member import member_ns
 from .routes.home import home_ns
@@ -36,6 +36,8 @@ def create_app(config):
   import_models()
   migrate.init_app(app, db)
   JWTManager(app)
+
+  socketio.init_app(app)
 
   # Initialize database
   with app.app_context():
