@@ -3,6 +3,7 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import socketio
 from flask_socketio import emit
+from ..extensions import db
 
 chat_ns = Namespace('Chat', description="A namespace for Chat")
 

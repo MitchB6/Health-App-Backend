@@ -2,7 +2,6 @@ from flask import jsonify, request, make_response
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
 
-from ..models.chat_history import Chats
 from ..services.auth_services import *
 
 auth_ns = Namespace('auth', description="A namespace for Authentication")

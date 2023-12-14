@@ -62,7 +62,7 @@ def create_app(config):
   api.add_namespace(workout_ns)
   api.add_namespace(admin_ns)
   api.add_namespace(workoutplan_ns)
-  api.add_namespace(chat_ns)
+  api.add_namespace(chat_ns )
 
   @app.shell_context_processor
   def make_shell_context():

@@ -16,7 +16,7 @@ hire_request_model = coach_ns.model('HireRequest', {
 
 @coach_ns.route('/')
 class AllCoaches(Resource):
-  @jwt_required()
+  @jwt_required() #the login token
   @coach_ns.doc(params={'specialization': 'Specialization of coach',
                         'price': 'Price of coach',
                         'location': 'Location of coach'})
