@@ -56,6 +56,7 @@ def create_exercise(data):
       name=str(data["name"]),
       description=str(data.get("description")),
       muscle_group=str(data.get("muscle_group")),
+      equipment=str(data.get("equipment")),
   )
   new_exercise.save()
 
