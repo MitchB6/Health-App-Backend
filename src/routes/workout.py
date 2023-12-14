@@ -40,13 +40,6 @@ update_workout_exercise_link = workout_ns.model('Update Workout_Exercise', {
 })
 
 
-add_workout_to_plan_model = workout_ns.model('AddWorkoutToPlan', {
-    'plan_id': fields.Integer(required=True, description='ID of the workout plan'),
-    'workout_id': fields.Integer(required=True, description='ID of the workout to add'),
-    'sequence': fields.Integer(required=True, description='Sequence of the workout in the plan'),
-})
-
-
 @workout_ns.route('/')
 class WorkoutList(Resource):
   @jwt_required()
