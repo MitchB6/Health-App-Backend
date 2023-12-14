@@ -1,6 +1,4 @@
-from datetime import datetime
 from ..extensions import db
-from .workoutplanlink_model import WorkoutPlanLink
 
 # The `WorkoutPlan` class represents a workout plan in a database, with methods for saving, deleting,
 # linking and unlinking workouts, and retrieving linked workouts.
