@@ -3,7 +3,6 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ..services.coach_services import *
-from ..services.decorators import coach_required
 
 
 coach_ns = Namespace('coaches', description="A namespace for coaches")
@@ -31,6 +30,7 @@ class AllCoaches(Resource):
 
 @coach_ns.route('/request_hire')
 class HireRequestResource(Resource):
+  @jwt_required()
   @coach_ns.expect(hire_request_model)
   def post(self):
     """Request to hire a coach."""

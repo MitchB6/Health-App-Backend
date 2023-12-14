@@ -1,6 +1,7 @@
 from ..extensions import db
 from .coach_model import CoachInfo
 from .member_model import Member
+from .personalinfo_model import PersonalInfo
 
 # The `CoachesMembersLink` class is a model that represents the link between coaches and members in a
 # database, providing methods to create, remove, and find links between them.
@@ -25,6 +26,22 @@ class CoachesMembersLink(db.Model):
         "member_id": self.member_id,
         "status": self.status,
         "last_updated": self.last_updated,
+    }
+
+  def serialize_members(self):
+    personal_info = PersonalInfo.query.filter_by(
+        member_id=self.member_id).first()
+    return {
+        'coach_id': self.coach_id,
+        'member_id': self.member_id,
+        'first_name': personal_info.first_name if personal_info else None,
+        'last_name': personal_info.last_name if personal_info else None,
+        'specialization': self.specialization,
+        'price': float(self.price),
+        'location': self.location,
+        'schedule_general': self.schedule_general,
+        'qualifications': self.qualifications,
+        'approved': self.approved
     }
 
   @classmethod
