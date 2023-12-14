@@ -1,5 +1,5 @@
 from src import create_app, socketio
-from config import DevConfig,ProdConfig,TestConfig
+from config import DevConfig, ProdConfig, TestConfig
 
 app=create_app(DevConfig)
 

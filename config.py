@@ -22,4 +22,3 @@ class TestConfig(Config):
     SQLALCHEMY_ECHO=False
     TESTING=True
     pass
-
