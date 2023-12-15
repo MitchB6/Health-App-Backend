@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from ..extensions import db
-from .workoutplanlink_model import WorkoutPlanLink
 
 # The `Workout` class represents a workout entity in a database, with various attributes and methods
 # for saving, deleting, and linking workouts to workout plans.
@@ -48,28 +47,3 @@ class Workout(db.Model):
   def find_by_member(cls, member_id):
     """Find all workouts for a specific member."""
     return cls.query.filter_by(member_id=member_id).all()
-
-  def link_to_workout_plan(self, plan_id, sequence, commit=True):
-    """Link workout to a workout plan."""
-    link = WorkoutPlanLink(workout_id=self.workout_id,
-                           plan_id=plan_id, sequence=sequence)
-    db.session.add(link)
-    if commit:
-      db.session.commit()
-
-  def unlink_from_workout_plan(self, plan_id, commit=True):
-    """Unlink workout from a workout plan."""
-    link = WorkoutPlanLink.query.filter_by(
-        workout_id=self.workout_id, plan_id=plan_id).first()
-    if link:
-      db.session.delete(link)
-      if commit:
-        db.session.commit()
-
-  def update_link_sequence(self, plan_id, sequence):
-    """Update the sequence of a workout in a workout plan."""
-    link = WorkoutPlanLink.query.filter_by(
-        workout_id=self.workout_id, plan_id=plan_id).first()
-    if link:
-      link.sequence = sequence
-      db.session.commit()

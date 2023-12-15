@@ -1,4 +1,5 @@
 from ..extensions import db
+from ..models.workout_model import Workout
 
 # The `WorkoutPlanLink` class represents a link between a workout plan and a workout in a database,
 # with methods for saving, deleting, and finding links.
@@ -25,6 +26,19 @@ class WorkoutPlanLink(db.Model):
         'plan_id': self.plan_id,
         'workout_id': self.workout_id,
         'sequence': self.sequence
+    }
+
+  def serialize_workout_in_plan(self):
+    workout_info = Workout.query.filter_by(
+        workout_id=self.workout_id).first()
+    return {
+        "link_id": self.link_id,
+        "plan_id": self.plan_id,
+        "workout_id": self.workout_id,
+        "sequence": self.sequence,
+        'workout_name': workout_info.workout_name,
+        'created_at': workout_info.created_at,
+        'last_modified': workout_info.last_modified,
     }
 
   def save(self):

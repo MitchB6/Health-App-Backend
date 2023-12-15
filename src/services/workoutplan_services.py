@@ -28,12 +28,23 @@ def get_member_plans():
     return {"message": str(e)}, 500
 
 
+def delete_plan(plan_id):
+  """Delete a plan"""
+  plan = WorkoutPlan.query.filter_by(plan_id=plan_id).first()
+  if plan:
+    plan.delete()
+    return {"message": "Plan deleted successfully"}, 200
+  else:
+    return {"message": "Plan not found"}, 404
+
+
 def get_workouts_by_plan(plan_id):
   """Get all workouts from plan"""
   workouts = WorkoutPlanLink.query.filter_by(plan_id=plan_id).all()
 
   # Serialize the exercises
-  serialized_workouts = [workouts.serialize() for workout in workouts]
+  serialized_workouts = [workout.serialize_workout_in_plan()
+                         for workout in workouts]
 
   return serialized_workouts, 200
 
@@ -48,9 +59,9 @@ def add_workout_to_plan(plan_id, data):
   return {"message": "Workout added to plan successfully"}, 201
 
 
-def delete_workout_from_plan(workout_plan_link_id):
+def delete_workout_from_plan(link_id):
   workout_plan_link = WorkoutPlanLink.query.filter_by(
-      workout_plan_link_id=workout_plan_link_id).first()
+      link_id=link_id).first()
   if workout_plan_link:
     workout_plan_link.delete()
     return {"message": "Workout deleted from plan successfully"}, 200
@@ -58,12 +69,22 @@ def delete_workout_from_plan(workout_plan_link_id):
     return {"message": "Workout not found in plan"}, 404
 
 
-def update_workout_in_plan(workout_plan_link_id, data):
+def update_workout_in_plan(data):
+  link_id = data.get("link_id")
   workout_plan_link = WorkoutPlanLink.query.filter_by(
-      workout_plan_link_id=workout_plan_link_id).first()
+      link_id=link_id).first()
   if workout_plan_link:
     workout_plan_link.sequence = data.get('sequence')
     workout_plan_link.save()
     return {"message": "Workout updated in plan successfully"}, 200
+  else:
+    return {"message": "Workout not found in plan"}, 404
+
+
+def get_workout_in_plan(link_id):
+  workout_plan_link = WorkoutPlanLink.query.filter_by(
+      link_id=link_id).first()
+  if workout_plan_link:
+    return workout_plan_link.serialize_workout_in_plan(), 200
   else:
     return {"message": "Workout not found in plan"}, 404

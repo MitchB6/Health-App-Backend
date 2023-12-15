@@ -49,5 +49,3 @@ def create_workout_plan(member_id, workout_details):
     db.session.add(new_workout)
     db.session.commit()
     return new_workout.serialize(), 201
-
-

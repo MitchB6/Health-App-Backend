@@ -37,7 +37,7 @@ def get_sample_exercises():
 
 def search_exercises(name=None, muscle_group=None, equipment=None):
   """Get all exercises"""
-  query = Exercise.query
+  query = Exercise.query.filter_by(is_active=True)
   if name:
     query = query.filter(Exercise.name.ilike(f"%{name}%"))
   if muscle_group:
