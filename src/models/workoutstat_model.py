@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..extensions import db
 
 # The `WorkoutStat` class represents a workout statistic and provides methods for saving, deleting,
@@ -12,9 +13,18 @@ class WorkoutStat(db.Model):
       'workouts.workout_id', ondelete='CASCADE'), nullable=False)
   duration = db.Column(db.Integer)
   calories_burned = db.Column(db.Integer)
-  date = db.Column(db.DateTime, server_default=db.func.now())
+  date = db.Column(db.Date, default=datetime.utcnow().date())
 
   workout = db.relationship('Workout', back_populates='workout_stats')
+
+  def serialize(self):
+    return {
+        'stat_id': self.stat_id,
+        'workout_id': self.workout_id,
+        'duration': self.duration,
+        'calories_burned': self.calories_burned,
+        'date': self.date
+    }
 
   def save(self, commit=False):
     """Saves a workout statistic to the database."""
@@ -26,13 +36,3 @@ class WorkoutStat(db.Model):
     """Deletes a workout statistic from the database."""
     db.session.delete(self)
     db.session.commit()
-
-  @classmethod
-  def find_by_workout_id(cls, workout_id):
-    """Finds all stats for a given workout ID."""
-    return cls.query.filter_by(workout_id=workout_id).all()
-
-  @classmethod
-  def find_stat(cls, stat_id):
-    """Finds a specific workout stat by its ID."""
-    return cls.query.get(stat_id)

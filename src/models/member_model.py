@@ -11,7 +11,8 @@ class Member(db.Model):
   member_id = db.Column(db.Integer, primary_key=True)
   email = db.Column(db.String(100), nullable=True, unique=True)
   role_id = db.Column(db.Integer, nullable=False, default=0)
-  join_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+  join_date = db.Column(db.Date, nullable=False,
+                        default=datetime.utcnow().date())
 
   personal_info = db.relationship(
       'PersonalInfo', back_populates='member', uselist=False, cascade='all, delete-orphan')
