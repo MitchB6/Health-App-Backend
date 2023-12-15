@@ -4,7 +4,7 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
 
 from ..services.workout_services import *
-from ..models.workoutplanlink_model import WorkoutPlanLink
+from ..services.decorators import coach_required
 
 workout_ns = Namespace('workouts', description='Workout related operations')
 
@@ -32,7 +32,6 @@ create_workout_exercise_link = workout_ns.model('Create Workout_Exercise', {
 })
 
 update_workout_exercise_link = workout_ns.model('Update Workout_Exercise', {
-    'workout_exercise_id': fields.Integer(description='Workout Exercise ID'),
     'sets': fields.Integer(description='Number of sets'),
     'reps': fields.Integer(description='Number of repetitions'),
     'sequence': fields.Integer(description='Exercise sequence'),
@@ -77,13 +76,39 @@ class Workout(Resource):
 @workout_ns.route('/member/<int:member_id>')
 class WorkoutsForMember(Resource):
   @jwt_required()
+  @coach_required
   def get(self, member_id):
     """Get all workouts for a specific member"""
     result, status_code = get_workouts_by_member(member_id)
+
+    return make_response(result, status_code)
+
+  @jwt_required()
+  @coach_required
+  @workout_ns.expect(workout_model)
+  def post(self, member_id):
+    """Create a new workout for a specific member"""
+    data = request.get_json()
+    result, status_code = create_workout_for_member(member_id, data)
+    return make_response(result, status_code)
+
+  @jwt_required()
+  @coach_required
+  def put(self, member_id):
+    """Update an existing workout for a specific member"""
+    data = request.get_json()
+    result, status_code = update_workout_for_member(member_id, data)
+    return make_response(result, status_code)
+
+  @jwt_required()
+  @coach_required
+  def delete(self, member_id):
+    """Delete an existing workout for a specific member"""
+    result, status_code = delete_workout_for_member(member_id)
     return make_response(result, status_code)
 
 
-@workout_ns.route('/<int:workout_id>/exercises')
+@workout_ns.route('/workout<int:workout_id>')
 class WorkoutExercises(Resource):
   @jwt_required()
   @workout_ns.doc(params={'workout_id': 'ID of the workout'})
@@ -100,18 +125,54 @@ class WorkoutExercises(Resource):
     result, status_code = add_exercise_to_workout(workout_id, data)
     return make_response(result, status_code)
 
+
+@workout_ns.route('/workout_exercise<int:workout_exercise_id>')
+class Exercises_in_Workout(Resource):
   @jwt_required()
   @workout_ns.expect(update_workout_exercise_link)
-  def put(self, workout_id):
+  def put(self, workout_exercise_id):
     """Update an exercise within a workout"""
     data = request.get_json()
-    result, status_code = update_exercise_in_workout(workout_id, data)
+    result, status_code = update_exercise_in_workout(
+        workout_exercise_id, data)
     return make_response(result, status_code)
 
   @jwt_required()
-  @workout_ns.doc(params={'workout_exercise_id': 'Workout Exercise ID'})
-  def delete(self, workout_id):
+  def delete(self, workout_exercise_id):
     """Delete an exercise from a workout"""
-    workout_exercise_id = request.args.get('workout_exercise_id')
-    result, status_code = delete_exercise_from_workout(workout_exercise_id)
+    result, status_code = delete_exercise_from_workout(
+        workout_exercise_id)
+    return make_response(result, status_code)
+
+
+@workout_ns.route('/workout<int:workout_id>/stats')
+class WorkoutStats(Resource):
+  @jwt_required()
+  @workout_ns.doc(params={'workout_id': 'ID of the workout'})
+  def get(self, workout_id):
+    """Get all stats for a specific workout"""
+    result, status_code = get_workout_stats(workout_id)
+    return make_response(result, status_code)
+
+  @jwt_required()
+  def post(self, workout_id):
+    """Add a stat to a workout"""
+    data = request.get_json()
+    result, status_code = add_stat_to_workout(workout_id, data)
+    return make_response(result, status_code)
+
+
+@workout_ns.route('/workout/stats<stat_id>')
+class Stats_in_Workout(Resource):
+  @jwt_required()
+  @workout_ns.doc(params={'workout_id': 'ID of the workout'})
+  def delete(self, stat_id):
+    """Delete a stat from a workout"""
+    result, status_code = delete_stat_from_workout(stat_id)
+    return make_response(result, status_code)
+
+  def put(self, stat_id):
+    """Update a stat in a workout"""
+    data = request.get_json()
+    result, status_code = update_stat_in_workout(stat_id, data)
     return make_response(result, status_code)

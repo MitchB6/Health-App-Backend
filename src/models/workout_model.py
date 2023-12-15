@@ -42,8 +42,3 @@ class Workout(db.Model):
     """Delete a workout."""
     db.session.delete(self)
     db.session.commit()
-
-  @classmethod
-  def find_by_member(cls, member_id):
-    """Find all workouts for a specific member."""
-    return cls.query.filter_by(member_id=member_id).all()
