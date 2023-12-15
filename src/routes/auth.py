@@ -47,7 +47,7 @@ login_model = auth_ns.model(
 )
 
 chat_model = auth_ns.model(
-    "Login",
+    "Chat",
     {
         "username": fields.String(required=True),
         "recipient": fields.String(required=True),
