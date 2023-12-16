@@ -8,6 +8,7 @@ from ..services.decorators import coach_required
 client_ns = Namespace('clients', description="A namespace for clients")
 
 
+
 @client_ns.route('/')
 class AllClients(Resource):
   @coach_required
@@ -28,6 +29,7 @@ class ClientRequests(Resource):
 
 
 @client_ns.route('/accept_request/<int:link_id>')
+@client_ns.route('/accept_request/<int:link_id>')
 class AcceptClientRequest(Resource):
   @coach_required
   def post(self, link_id):
@@ -38,6 +40,7 @@ class AcceptClientRequest(Resource):
 
 
 @client_ns.route('/decline_request/<int:link_id>')
+@client_ns.route('/decline_request/<int:link_id>')
 class DeclineClientRequest(Resource):
   @coach_required
   def post(self, link_id):
@@ -46,6 +49,7 @@ class DeclineClientRequest(Resource):
     return make_response(response, status_code)
 
 
+@client_ns.route('/client_dashboard/<int:member_id>')
 @client_ns.route('/client_dashboard/<int:member_id>')
 class ClientDashboard(Resource):
   @coach_required

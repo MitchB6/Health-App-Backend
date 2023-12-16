@@ -16,8 +16,8 @@ class CoachesMembersLink(db.Model):
   member_id = db.Column(db.Integer, db.ForeignKey(
       'members.member_id', ondelete='CASCADE'), nullable=False)
   status = db.Column(db.String(20), nullable=False, default='pending')
-  last_updated = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(
-  ), onupdate=db.func.current_timestamp())
+  last_updated = db.Column(db.Date, nullable=False, default=db.func.current_date(
+  ), onupdate=db.func.current_date())
 
   def serialize(self):
     return {
@@ -25,44 +25,13 @@ class CoachesMembersLink(db.Model):
         "coach_id": self.coach_id,
         "member_id": self.member_id,
         "status": self.status,
-        "last_updated": self.last_updated,
+        "last_updated": self.last_updated.strftime('%Y-%m-%d') if self.last_updated else None,
     }
 
-  def serialize_members(self):
-    personal_info = PersonalInfo.query.filter_by(
-        member_id=self.member_id).first()
-    return {
-        'coach_id': self.coach_id,
-        'member_id': self.member_id,
-        'first_name': personal_info.first_name if personal_info else None,
-        'last_name': personal_info.last_name if personal_info else None,
-        'specialization': self.specialization,
-        'price': float(self.price),
-        'location': self.location,
-        'schedule_general': self.schedule_general,
-        'qualifications': self.qualifications,
-        'approved': self.approved
-    }
+  def save(self):
+    db.session.add(self)
+    db.session.commit()
 
-  @classmethod
-  def remove_link(cls, coach_id, member_id):
-    """Remove link if exists"""
-    link_to_remove = cls.query.filter_by(
-        coach_id=coach_id, member_id=member_id).first()
-    if link_to_remove:
-      db.session.delete(link_to_remove)
-      db.session.commit()
-
-  @classmethod
-  def find_coaches_by_member(cls, member_id):
-    """Find coaches for specific member"""
-    links = cls.query.filter_by(member_id=member_id).all()
-    coach_ids = [link.coach_id for link in links]
-    return CoachInfo.query.filter(CoachInfo.coach_id.in_(coach_ids)).all()
-
-  @classmethod
-  def find_members_by_coach(cls, coach_id):
-    """Find members for specific coach"""
-    links = cls.query.filter_by(coach_id=coach_id).all()
-    member_ids = [link.member_id for link in links]
-    return Member.query.filter(Member.member_id.in_(member_ids)).all()
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()

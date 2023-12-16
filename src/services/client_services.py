@@ -9,6 +9,10 @@ def get_all_clients():
   clients = query.all()
   if clients:
     serialized_clients = [client.serialize() for client in clients]
+  query = CoachesMembersLink.query.filter_by(status="approved")
+  clients = query.all()
+  if clients:
+    serialized_clients = [client.serialize() for client in clients]
     return serialized_clients, 200
   else:
     return {"message": "No clients found"}, 404
@@ -33,7 +37,14 @@ def accept_client_request(request_id):
   return {'message': 'Request not found'}, 404
 
 
+
 def decline_client_request(request_id):
+  request = CoachesMembersLink.query.get(request_id)
+  if request:
+    db.session.delete(request)
+    db.session.commit()
+    return {'message': 'Client request declined'}, 200
+  return {'message': 'Request not found'}, 404
   request = CoachesMembersLink.query.get(request_id)
   if request:
     db.session.delete(request)
@@ -42,7 +53,11 @@ def decline_client_request(request_id):
   return {'message': 'Request not found'}, 404
 
 
+
 def get_client_dashboard(client_id):
+  workouts = Workout.query.filter_by(member_id=client_id).all()
+  # Assuming there's a Survey model linked to a Member
+  surveys = Survey.query.filter_by(member_id=client_id).all()
   workouts = Workout.query.filter_by(member_id=client_id).all()
   # Assuming there's a Survey model linked to a Member
   surveys = Survey.query.filter_by(member_id=client_id).all()

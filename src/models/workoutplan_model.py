@@ -26,8 +26,8 @@ class WorkoutPlan(db.Model):
         'member_id': self.member_id,
         'plan_name': self.plan_name,
         'description': self.description,
-        'start_date': self.start_date,
-        'end_date': self.end_date
+        'start_date': self.start_date.strftime('%Y-%m-%d') if self.start_date else None,
+        'end_date': self.end_date.strftime('%Y-%m-%d') if self.end_date else None
     }
 
   def create(self):

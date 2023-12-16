@@ -29,12 +29,6 @@ class Member(db.Model):
   surveys = db.relationship(
       'Survey', back_populates='member', cascade='all, delete-orphan')
 
-  def __repr__(self):
-    """String representation of a Member instance."""
-    if self.personal_info:
-      return f"<Member {self.personal_info.first_name} {self.personal_info.last_name}>"
-    return f"<Member {self.member_id}>"
-
   def delete(self):
     """ Permanently delete the member """
     db.session.delete(self)

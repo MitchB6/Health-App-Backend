@@ -51,3 +51,7 @@ class CoachInfo(db.Model):
       if hasattr(self, key) and value is not None:
         setattr(self, key, value)
     db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
