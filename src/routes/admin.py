@@ -20,7 +20,7 @@ coach_approval_model = admin_ns.model(
 class AdminResource(Resource):
   @jwt_required()
   @admin_required
-  def get(self):
+  def get(self): 
     """Get all coach forms"""
     result, status_code = get_all_coach_forms()
     return make_response(jsonify(result), status_code)
