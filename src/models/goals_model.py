@@ -37,23 +37,12 @@ class MemberGoals(db.Model):
         'last_updated': self.last_updated.strftime('%Y-%m-%d') if self.last_updated else None,
     }
 
-  def save(self, commit=True):
+  def save(self):
     """Save or update a member goal."""
     db.session.add(self)
-    if commit:
-      db.session.commit()
+    db.session.commit()
 
   def delete(self):
     """Delete a member goal."""
     db.session.delete(self)
     db.session.commit()
-
-  @classmethod
-  def find_by_member(cls, member_id):
-    """Find all goals for a specific member."""
-    return cls.query.filter_by(member_id=member_id).all()
-
-  @property
-  def is_goal_deadline_passed(self):
-    """Check if the goal deadline has passed."""
-    return self.target_date < datetime.date.today()

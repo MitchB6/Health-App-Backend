@@ -10,10 +10,9 @@ client_ns = Namespace('clients', description="A namespace for clients")
 
 @client_ns.route('/')
 class AllClients(Resource):
-  # @coach_required
+  @coach_required
   def get(self):
     """get all clients"""
-    print("get all clients"*10)
     client_list, status_code = get_all_clients()
     return make_response(client_list, status_code)
 
@@ -30,9 +29,9 @@ class ClientRequests(Resource):
 @client_ns.route('/accept_request/<int:link_id>')
 class AcceptClientRequest(Resource):
   @coach_required
-  def post(self, request_id):
+  def post(self, link_id):
     """Accept a client request"""
-    response, status_code = accept_client_request(request_id)
+    response, status_code = accept_client_request(link_id)
     return make_response(response, status_code)
 
 
@@ -52,14 +51,3 @@ class ClientDashboard(Resource):
     """Get a client's dashboard"""
     dashboard_data = get_client_dashboard(client_id)
     return make_response(dashboard_data, 200)
-
-
-@client_ns.route('/create_workout_plan')
-class CreateWorkoutPlan(Resource):
-  @coach_required
-  def post(self):
-    """Create a personalized workout plan for client"""
-    data = request.json
-    response, status_code = create_workout_plan(
-        data['member_id'], data['workout_details'])
-    return make_response(response, status_code)

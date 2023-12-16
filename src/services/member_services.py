@@ -2,6 +2,7 @@ from flask_jwt_extended import get_jwt_identity
 import re  # regex
 
 from ..models.member_model import Member
+from ..models.goals_model import MemberGoals
 from ..models.personalinfo_model import PersonalInfo
 from ..extensions import db
 
@@ -45,8 +46,8 @@ def get_member_settings():
 
 
 def update_member_settings(data):
-  current_member_id = get_jwt_identity()
-  member = Member.query.get_or_404(current_member_id)
+  member_id = get_jwt_identity()
+  member = Member.query.get_or_404(member_id)
 
   allowed_fields_member = ['email']
   allowed_fields_personal_info = ['username', 'phone', 'first_name', 'last_name', 'city', 'state', 'zip_code',
@@ -61,7 +62,39 @@ def update_member_settings(data):
 
 
 def delete_member():
-  current_member_id = get_jwt_identity()
-  member = Member.query.filter_by(member_id=current_member_id).first_or_404()
+  member_id = get_jwt_identity()
+  member = Member.query.filter_by(member_id=member_id).first_or_404()
   member.delete()
   return {"message": "Member deleted successfully."}, 200
+
+
+def get_member_goals():
+  member_id = get_jwt_identity()
+  goals = MemberGoals.query.filter_by(member_id=member_id).first_or_404()
+
+  if goals:
+    serialized_goals = [goal.serialize() for goal in goals]
+    return serialized_goals, 200
+  else:
+    return {"message": "No goals found"}, 404
+
+
+def create_member_goal(goal_details):
+  member_id = get_jwt_identity()
+  new_goal = MemberGoals(
+      member_id=member_id, **goal_details)
+  db.session.add(new_goal)
+  db.session.flush()
+  db.session.commit()
+  return {"message": f"Goal created successfully : {new_goal}"}, 404
+
+
+def get_member_workouts():
+  member_id = get_jwt_identity()
+  workouts = Member.query.filter_by(member_id=member_id).first_or_404()
+
+  if workouts:
+    serialized_workouts = [workout.serialize() for workout in workouts]
+    return serialized_workouts, 200
+  else:
+    return {"message": "No workouts found"}, 404

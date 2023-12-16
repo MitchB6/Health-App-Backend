@@ -41,7 +41,6 @@ member_settings_model = member_ns.model(
 @member_ns.route('/settings')
 @member_ns.response(404, 'Member not found.')
 class MemberSettingsResource(Resource):
-  # @member_ns.marshal_with(member_settings_model)
   @jwt_required()
   def get(self):
     """
@@ -69,4 +68,12 @@ class MemberSettingsResource(Resource):
     :return: Success message.
     """
     result, status_code = delete_member()
+    return make_response(jsonify(result), status_code)
+
+
+@member_ns.route('/goals')
+class MemberGoals(Resource):
+  @jwt_required()
+  def get(self):
+    result, status_code = get_member_goals()
     return make_response(jsonify(result), status_code)
