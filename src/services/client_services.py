@@ -24,8 +24,8 @@ def get_client_requests():
     return {"message": "No requests found"}, 404
 
 
-def accept_client_request(request_id):
-  request = CoachesMembersLink.query.get(request_id)
+def accept_client_request(link_id):
+  request = CoachesMembersLink.query.get(link_id)
   if request:
     request.status = 'approved'
     db.session.commit()
