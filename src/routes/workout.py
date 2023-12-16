@@ -43,19 +43,27 @@ create_workout_stat = workout_ns.model('Create Workout Stat', {
     'calories_burned': fields.Integer(description='Calories burned')
 })
 
+"""Good"""
+
 
 @workout_ns.route('/')
 class WorkoutList(Resource):
   @jwt_required()
   def get(self):
-    """Get all workouts"""
+    """
+    Get all workouts
+    GOOD
+    """
     result, status_code = get_member_workouts()
     return make_response(result, status_code)
 
   @jwt_required()
   @workout_ns.expect(workout_model)
   def post(self):
-    """Create a new workout"""
+    """
+    Create a new workout
+    GOOD
+    """
     data = request.get_json()
     result, status_code = create_workout(data)
     return make_response(result, status_code)
@@ -65,14 +73,20 @@ class WorkoutList(Resource):
 class Workout(Resource):
   @jwt_required()
   def get(self, workout_id):
-    """Get a specific workout"""
+    """
+    Get a specific workout
+    GOOD
+    """
     result, status_code = get_workout(workout_id)
     return make_response(result, status_code)
 
   @jwt_required()
   @workout_ns.expect(workout_model)
   def put(self, workout_id):
-    """Update an existing workout"""
+    """
+    Update an existing workout
+    GOOD
+    """
     data = request.get_json()
     result, status_code = update_workout(workout_id, data)
     return make_response(result, status_code)
@@ -102,7 +116,7 @@ class WorkoutExercises(Resource):
 
 
 @workout_ns.route('/workout_exercise/<int:workout_exercise_id>')
-class Exercises_in_Workout(Resource):
+class WorkoutExercisesID(Resource):
   @jwt_required()
   @workout_ns.expect(update_workout_exercise_link)
   def put(self, workout_exercise_id):
@@ -138,16 +152,21 @@ class WorkoutStats(Resource):
 
 
 @workout_ns.route('/workout_stat/<int:workout_stat_id>')
-class SpecificWorkout(Resource):
+class WorkoutStatsID(Resource):
   @jwt_required()
   def get(self, workout_stat_id):
     """Get a workout's specific stat"""
     result, status_code = get_workout_stat(workout_stat_id)
     return make_response(result, status_code)
 
+  def delete(self, workout_stat_id):
+    """Delete a workout's specific stat"""
+    result, status_code = delete_workout_stat(workout_stat_id)
+    return make_response(result, status_code)
+
 
 @workout_ns.route('/member/<int:member_id>')
-class WorkoutsForMember(Resource):
+class WorkoutsMemberID(Resource):
   @jwt_required()
   def get(self, member_id):
     """Get all workouts for a specific member"""

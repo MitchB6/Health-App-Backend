@@ -29,7 +29,7 @@ class AdminResource(Resource):
   @admin_required
   @admin_ns.expect(coach_approval_model)
   def put(self):
-    """Approve coach form"""
+    """Approve/deny coach form"""
     data = request.get_json()
     result, status_code = update_coach(data)
     return make_response(jsonify(result), status_code)
