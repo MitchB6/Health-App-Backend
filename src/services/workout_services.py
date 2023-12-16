@@ -4,10 +4,14 @@ from ..models.workout_model import Workout
 from ..models.workoutexercise_model import WorkoutExercise
 from ..models.workoutstat_model import WorkoutStat
 from ..models.coachmemberslink_model import CoachesMembersLink
+from ..models.coach_model import CoachInfo
+from ..extensions import db
 
 
 def verify_coach_member_link(member_id):
-  coach_id = get_jwt_identity()
+  query = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
+  coach = query.all()
+  print(coach)
   link = CoachesMembersLink.query.filter_by(
       coach_id=coach_id, member_id=member_id, status='approved').first()
   return link
@@ -30,8 +34,18 @@ def create_workout(data):
       workout_name=str(data.get('workout_name')),
       member_id=get_jwt_identity()
   )
-  new_workout.save()
-  response, status_code = {"message": "Workout created successfully"}, 201
+  db.session.add(new_workout)
+  db.session.flush()
+  db.session.commit()
+
+  response, status_code = {
+      "message": f"Workout created successfully : {new_workout.workout_id}"}, 201
+  return response, status_code
+
+
+def get_workout(workout_id):
+  workout = Workout.query.get_or_404(workout_id)
+  response, status_code = workout.serialize(), 200
   return response, status_code
 
 
@@ -62,16 +76,19 @@ def get_workouts_by_member(member_id):
 
   if link:
     """Get all workouts for a specific member"""
+    print('approved\n'*5)
     workouts = Workout.query.filter_by(member_id=member_id)
     response, status_code = [
         workout.serialize() for workout in workouts], 200
   else:
+    print('unapproved\n'*5)
     response, status_code = {'message': 'Access denied'}, 404
 
   return response, status_code
 
 
 def create_workout_for_member(member_id, data):
+  """Create a new workout for a specific member"""
   link = verify_coach_member_link(member_id)
 
   if link:
@@ -88,6 +105,7 @@ def create_workout_for_member(member_id, data):
 
 
 def update_workout_for_member(member_id, data):
+  """Update an existing workout for a specific member"""
   link = verify_coach_member_link(member_id)
 
   if link:
@@ -102,6 +120,7 @@ def update_workout_for_member(member_id, data):
 
 
 def delete_workout_for_member(member_id, workout_id):
+  """Delete an existing workout from a member"""
   link = verify_coach_member_link(member_id)
 
   if link:
@@ -115,17 +134,16 @@ def delete_workout_for_member(member_id, workout_id):
 
 
 def get_workout_exercises(workout_id):
-  # Find all exercises for a specific workout
+  """Get all exercises for a specific workout"""
   exercises = WorkoutExercise.query.filter_by(workout_id=workout_id).all()
 
-  # Serialize the exercises
   serialized_exercises = [exercise.serialize() for exercise in exercises]
 
   return serialized_exercises, 200
 
 
 def add_exercise_to_workout(workout_id, data):
-
+  """Add an exercise to a workout"""
   new_workout_exercise = WorkoutExercise(
       workout_id=workout_id,
       exercise_id=data.get('exercise_id'),
@@ -204,5 +222,13 @@ def update_stat_in_workout(stat_id, data):
     stat.date = data.get('date')
     stat.save()
     return {"message": "Stat updated successfully"}, 200
+  else:
+    return {"message": "Stat not found in workout"}, 404
+
+
+def get_workout_stat(workout_stat_id):
+  stat = WorkoutStat.query.filter_by(stat_id=workout_stat_id).first()
+  if stat:
+    return stat.serialize(), 200
   else:
     return {"message": "Stat not found in workout"}, 404

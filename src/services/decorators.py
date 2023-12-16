@@ -24,14 +24,4 @@ def coach_required(fn):
       return {"message": "Coaches only!"}, 403
     return fn(*args, **kwargs)
 
-
-def jwt_required_custom(fn):
-  @jwt_required()
-  def wrapper(*args, **kwargs):
-    try:
-      verify_jwt_in_request()
-      return fn(*args, **kwargs)
-    except Exception as e:
-      return {"message": "JWT validation error: " + str(e)}, 401
-
   return wrapper

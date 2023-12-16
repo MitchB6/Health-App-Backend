@@ -38,6 +38,11 @@ update_workout_exercise_link = workout_ns.model('Update Workout_Exercise', {
     'notes': fields.String(description='Additional notes'),
 })
 
+create_workout_stat = workout_ns.model('Create Workout Stat', {
+    'duration': fields.Integer(description='Duration of the workout'),
+    'calories_burned': fields.Integer(description='Calories burned')
+})
+
 
 @workout_ns.route('/')
 class WorkoutList(Resource):
@@ -59,6 +64,12 @@ class WorkoutList(Resource):
 @workout_ns.route('/<int:workout_id>')
 class Workout(Resource):
   @jwt_required()
+  def get(self, workout_id):
+    """Get a specific workout"""
+    result, status_code = get_workout(workout_id)
+    return make_response(result, status_code)
+
+  @jwt_required()
   @workout_ns.expect(workout_model)
   def put(self, workout_id):
     """Update an existing workout"""
@@ -73,45 +84,9 @@ class Workout(Resource):
     return make_response(result, status_code)
 
 
-@workout_ns.route('/member/<int:member_id>')
-class WorkoutsForMember(Resource):
-  @jwt_required()
-  @coach_required
-  def get(self, member_id):
-    """Get all workouts for a specific member"""
-    result, status_code = get_workouts_by_member(member_id)
-
-    return make_response(result, status_code)
-
-  @jwt_required()
-  @coach_required
-  @workout_ns.expect(workout_model)
-  def post(self, member_id):
-    """Create a new workout for a specific member"""
-    data = request.get_json()
-    result, status_code = create_workout_for_member(member_id, data)
-    return make_response(result, status_code)
-
-  @jwt_required()
-  @coach_required
-  def put(self, member_id):
-    """Update an existing workout for a specific member"""
-    data = request.get_json()
-    result, status_code = update_workout_for_member(member_id, data)
-    return make_response(result, status_code)
-
-  @jwt_required()
-  @coach_required
-  def delete(self, member_id):
-    """Delete an existing workout for a specific member"""
-    result, status_code = delete_workout_for_member(member_id)
-    return make_response(result, status_code)
-
-
-@workout_ns.route('/workout<int:workout_id>')
+@workout_ns.route('/<int:workout_id>')
 class WorkoutExercises(Resource):
   @jwt_required()
-  @workout_ns.doc(params={'workout_id': 'ID of the workout'})
   def get(self, workout_id):
     """Get all exercises for a specific workout"""
     result, status_code = get_workout_exercises(workout_id)
@@ -126,7 +101,7 @@ class WorkoutExercises(Resource):
     return make_response(result, status_code)
 
 
-@workout_ns.route('/workout_exercise<int:workout_exercise_id>')
+@workout_ns.route('/workout_exercise/<int:workout_exercise_id>')
 class Exercises_in_Workout(Resource):
   @jwt_required()
   @workout_ns.expect(update_workout_exercise_link)
@@ -145,16 +120,16 @@ class Exercises_in_Workout(Resource):
     return make_response(result, status_code)
 
 
-@workout_ns.route('/workout<int:workout_id>/stats')
+@workout_ns.route('/<int:workout_id>/stats')
 class WorkoutStats(Resource):
   @jwt_required()
-  @workout_ns.doc(params={'workout_id': 'ID of the workout'})
   def get(self, workout_id):
     """Get all stats for a specific workout"""
     result, status_code = get_workout_stats(workout_id)
     return make_response(result, status_code)
 
   @jwt_required()
+  @workout_ns.expect(create_workout_stat)
   def post(self, workout_id):
     """Add a stat to a workout"""
     data = request.get_json()
@@ -162,17 +137,41 @@ class WorkoutStats(Resource):
     return make_response(result, status_code)
 
 
-@workout_ns.route('/workout/stats<stat_id>')
-class Stats_in_Workout(Resource):
+@workout_ns.route('/workout_stat/<int:workout_stat_id>')
+class SpecificWorkout(Resource):
   @jwt_required()
-  @workout_ns.doc(params={'workout_id': 'ID of the workout'})
-  def delete(self, stat_id):
-    """Delete a stat from a workout"""
-    result, status_code = delete_stat_from_workout(stat_id)
+  def get(self, workout_stat_id):
+    """Get a workout's specific stat"""
+    result, status_code = get_workout_stat(workout_stat_id)
     return make_response(result, status_code)
 
-  def put(self, stat_id):
-    """Update a stat in a workout"""
+
+@workout_ns.route('/member/<int:member_id>')
+class WorkoutsForMember(Resource):
+  @jwt_required()
+  def get(self, member_id):
+    """Get all workouts for a specific member"""
+    result, status_code = get_workouts_by_member(member_id)
+
+    return make_response(result, status_code)
+
+  @jwt_required()
+  @workout_ns.expect(workout_model)
+  def post(self, member_id):
+    """Create a new workout for a specific member"""
     data = request.get_json()
-    result, status_code = update_stat_in_workout(stat_id, data)
+    result, status_code = create_workout_for_member(member_id, data)
+    return make_response(result, status_code)
+
+  @jwt_required()
+  def put(self, member_id):
+    """Update an existing workout for a specific member"""
+    data = request.get_json()
+    result, status_code = update_workout_for_member(member_id, data)
+    return make_response(result, status_code)
+
+  @jwt_required()
+  def delete(self, member_id):
+    """Delete an existing workout for a specific member"""
+    result, status_code = delete_workout_for_member(member_id)
     return make_response(result, status_code)

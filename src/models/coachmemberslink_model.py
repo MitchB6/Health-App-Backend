@@ -35,13 +35,7 @@ class CoachesMembersLink(db.Model):
         'coach_id': self.coach_id,
         'member_id': self.member_id,
         'first_name': personal_info.first_name if personal_info else None,
-        'last_name': personal_info.last_name if personal_info else None,
-        'specialization': self.specialization,
-        'price': float(self.price),
-        'location': self.location,
-        'schedule_general': self.schedule_general,
-        'qualifications': self.qualifications,
-        'approved': self.approved
+        'last_name': personal_info.last_name if personal_info else None
     }
 
   @classmethod

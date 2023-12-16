@@ -8,7 +8,7 @@ from ..services.coach_services import *
 coach_ns = Namespace('coaches', description="A namespace for coaches")
 
 hire_request_model = coach_ns.model('HireRequest', {
-    'member_id': fields.String(required=True, description='Client name'),
+    'member_id': fields.Integer(required=True, description='Client ID'),
     'coach_id': fields.Integer(required=True, description='Coach ID'),
 })
 
