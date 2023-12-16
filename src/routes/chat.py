@@ -18,18 +18,31 @@ class Chat(Resource):
 
 @socketio.on('send_message')
 def handle_send_message(data):
+    print(data)
     sender = data['sender']
     recipient = data['recipient']
     text = data['text']
-    chat_key = tuple(sorted([sender, recipient]))
 
-    new_message = Chats(chatkey='-'.join(chat_key), message=text)
-    db.session.add(new_message)
-    db.session.commit()
+    chat_key = tuple(sorted([sender, recipient]))
+    x = "-".join(chat_key)
+    print(x)
+
+    # new_message = Chats(chatkey = x, sender=sender, recipient=recipient, message=text)
+    
+    # # Save the new message to the database 
+    # db.session.add(new_message)
+    # db.session.commit()
+
+    
+    print(data)
+    print(chat_key)
+    print(chat_history)
+
+
     
 
     if chat_key not in chat_history:
-        chat_history[chat_key] = []
+        chat_history[chat_key] = [] 
     chat_history[chat_key].append(data)
 
     emit('new_message', data, room=recipient)
@@ -39,12 +52,12 @@ def handle_send_message(data):
 def handle_request_history(data):
     user1 = data['user1']
     user2 = data['user2']
-    chat_key = tuple(sorted([user1, user2]))
+    chat_key = tuple(sorted([user1, user2])) 
     print(chat_key)
     print("-".join(chat_key))
 
     history = chat_history.get(chat_key, [])
-    emit('chat_history', history, room=user1)
+    emit('chat_history', history, room=chat_key)
 
 @socketio.on('connect')
 def handle_connect():

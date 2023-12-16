@@ -7,48 +7,49 @@ from ..services.decorators import coach_required
 
 client_ns = Namespace('clients', description="A namespace for clients")
 
+
 @client_ns.route('/')
 class AllClients(Resource):
-    @jwt_required
-    @coach_required
-    def get(self):
-        """get all cleints"""
-        client_list = get_all_clients()
-        return make_response(client_list, 200)
+  @coach_required
+  def get(self):
+    """get all clients"""
+    print("get all clients"*10)
+    client_list, status_code = get_all_clients()
+    return make_response(client_list, status_code)
 
-@client_ns.route('/accept_request/<int:request_id>')
+
+@client_ns.route('/requests')
+class ClientRequests(Resource):
+  @coach_required
+  def get(self):
+    """Get all client requests"""
+    request_list, status_code = get_client_requests()
+    return make_response(request_list, status_code)
+
+
+@client_ns.route('/accept_request/<int:link_id>')
 class AcceptClientRequest(Resource):
-    @jwt_required
-    @coach_required
-    def post(self, request_id):
-        """Accept a client request"""
-        response, status_code = accept_client_request(request_id)
-        return make_response(jsonify(response), status_code)
+  @coach_required
+  def post(self, link_id):
+    """Accept a client request"""
+    print("this is the link is", link_id)
+    response, status_code = accept_client_request(link_id)
+    return make_response(response, status_code)
 
-@client_ns.route('/decline_request/<int:request_id>')
+
+@client_ns.route('/decline_request/<int:link_id>')
 class DeclineClientRequest(Resource):
-    @jwt_required
-    @coach_required
-    def post(self, request_id):
-        """Decline a client request"""
-        response, status_code = decline_client_request(request_id)
-        return make_response(jsonify(response), status_code)
+  @coach_required
+  def post(self, link_id):
+    """Decline a client request"""
+    response, status_code = decline_client_request(link_id)
+    return make_response(response, status_code)
 
-@client_ns.route('/client_dashboard/<int:client_id>')
+
+@client_ns.route('/client_dashboard/<int:member_id>')
 class ClientDashboard(Resource):
-    @jwt_required
-    @coach_required
-    def get(self, client_id):
-        """Get a client's dashboard"""
-        dashboard_data = get_client_dashboard(client_id)
-        return make_response(jsonify(dashboard_data), 200)
-
-@client_ns.route('/create_workout_plan')
-class CreateWorkoutPlan(Resource):
-    @jwt_required
-    @coach_required
-    def post(self):
-        """Create a personalized workout plan for client"""
-        data = request.json
-        response, status_code = create_workout_plan(data['member_id'], data['workout_details'])
-        return make_response(jsonify(response), status_code)
+  @coach_required
+  def get(self, member_id):
+    """Get a client's dashboard"""
+    dashboard_data = get_client_dashboard(member_id)
+    return make_response(dashboard_data, 200)
