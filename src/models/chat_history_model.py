@@ -16,6 +16,7 @@ def serialize(self):
   """Return object data in easily serializeable format."""
   return {
       'id': self.id,
+      'link_id': self.link_id,
       'chatkey': self.chatkey,
       'message': self.message,
       'recorded_at': self.recorded_at.strftime('%Y-%m-%d') if self.recorded_at else None

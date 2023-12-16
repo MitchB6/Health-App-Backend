@@ -156,7 +156,7 @@ def add_exercise_to_workout(workout_id, data):
       notes=data.get('notes')
   )
   new_workout_exercise.save()
-  return {"message": "Exercise added to workout successfully"}, 201
+  return {"message": f"Exercise added to workout successfully: {new_workout_exercise.workout_exercise_id}"}, 201
 
 
 def update_exercise_in_workout(workout_exercise_id, data):
@@ -207,7 +207,7 @@ def add_stat_to_workout(workout_id, data):
   return {"message": "Stat added to workout successfully"}, 201
 
 
-def delete_stat_from_workout(stat_id):
+def delete_workout_stat(stat_id):
   stat = WorkoutStat.query.filter_by(stat_id=stat_id).first()
   if stat:
     stat.delete()
