@@ -28,12 +28,10 @@ class AllCoaches(Resource):
     return make_response(jsonify(result), status_code)
 
 
-@coach_ns.route('/request_hire')
+@coach_ns.route('/request_hire <int:coach_id>')
 class HireRequestResource(Resource):
   @jwt_required()
-  @coach_ns.expect(hire_request_model)
-  def post(self):
+  def post(self, coach_id):
     """Request to hire a coach."""
-    data = request.json
-    result, status_code = link_request(data)
+    result, status_code = link_request(coach_id)
     return make_response(jsonify(result), status_code)

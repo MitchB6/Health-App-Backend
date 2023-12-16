@@ -7,13 +7,21 @@ from ..models.workout_model import Workout
 def get_all_clients():
   query = CoachesMembersLink.query.filter_by(status="approved")
   clients = query.all()
-  print('clients'*10)
-  print(clients)
   if clients:
-    serialized_clients = [client.serialized_members() for client in clients]
-    return {"data": serialized_clients}, 200
+    serialized_clients = [client.serialize() for client in clients]
+    return serialized_clients, 200
   else:
     return {"message": "No clients found"}, 404
+
+
+def get_client_requests():
+  query = CoachesMembersLink.query.filter_by(status="pending")
+  requests = query.all()
+  if requests:
+    serialized_requests = [request.serialize() for request in requests]
+    return serialized_requests, 200
+  else:
+    return {"message": "No requests found"}, 404
 
 
 def accept_client_request(request_id):

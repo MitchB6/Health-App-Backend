@@ -1,3 +1,5 @@
+from flask_jwt_extended import get_jwt_identity
+
 from ..models.coach_model import CoachInfo
 from ..models.coachmemberslink_model import CoachesMembersLink
 from ..extensions import db
@@ -26,9 +28,8 @@ def search_coaches(specialization=None, price=0.00, location=None):
     return {"message": "No coaches found"}, 404
 
 
-def link_request(data):
-  member_id = data.get('member_id')
-  coach_id = data.get('coach_id')
+def link_request(coach_id):
+  member_id = get_jwt_identity()
 
   if not member_id or not coach_id:
     return {'message': 'Client name and coach ID are required'}, 400
