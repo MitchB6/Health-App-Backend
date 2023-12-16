@@ -20,32 +20,28 @@ class Chat(Resource):
 
 @socketio.on('send_message')
 def handle_send_message(data):
-    print(data)
-    sender = data['sender']
-    recipient = data['recipient']
-    text = data['text']
+  print(data)
+  sender = data['sender']
+  recipient = data['recipient']
+  text = data['text']
 
-    chat_key = tuple(sorted([sender, recipient]))
-    x = "-".join(chat_key)
-    print(x)
+  chat_key = tuple(sorted([sender, recipient]))
+  x = "-".join(chat_key)
+  print(x)
 
-    # new_message = Chats(chatkey = x, sender=sender, recipient=recipient, message=text)
-    
-    # # Save the new message to the database 
-    # db.session.add(new_message)
-    # db.session.commit()
+  # new_message = Chats(chatkey = x, sender=sender, recipient=recipient, message=text)
 
-    
-    print(data)
-    print(chat_key)
-    print(chat_history)
+  # # Save the new message to the database
+  # db.session.add(new_message)
+  # db.session.commit()
 
+  print(data)
+  print(chat_key)
+  print(chat_history)
 
-    
-
-    if chat_key not in chat_history:
-        chat_history[chat_key] = [] 
-    chat_history[chat_key].append(data)
+  if chat_key not in chat_history:
+    chat_history[chat_key] = []
+  chat_history[chat_key].append(data)
 
   emit('new_message', data, room=recipient)
   emit('new_message', data, room=sender)
@@ -53,14 +49,14 @@ def handle_send_message(data):
 
 @socketio.on('request_history')
 def handle_request_history(data):
-    user1 = data['user1']
-    user2 = data['user2']
-    chat_key = tuple(sorted([user1, user2]))
-    print(chat_key)
-    print("-".join(chat_key))
+  user1 = data['user1']
+  user2 = data['user2']
+  chat_key = tuple(sorted([user1, user2]))
+  print(chat_key)
+  print("-".join(chat_key))
 
-    history = chat_history.get(chat_key, [])
-    emit('chat_history', history, room=user1)
+  history = chat_history.get(chat_key, [])
+  emit('chat_history', history, room=user1)
 
 
 @socketio.on('connect')
@@ -69,4 +65,5 @@ def handle_connect():
 
 
 @socketio.on('disconnect')
+def handle_disconnect():
   print('Client disconnected')
