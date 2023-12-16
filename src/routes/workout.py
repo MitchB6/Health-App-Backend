@@ -61,7 +61,7 @@ class WorkoutList(Resource):
     return make_response(result, status_code)
 
 
-@workout_ns.route('/<int:workout_id>')
+@workout_ns.route('/<int:workout_id>/')
 class Workout(Resource):
   @jwt_required()
   def get(self, workout_id):
@@ -84,7 +84,7 @@ class Workout(Resource):
     return make_response(result, status_code)
 
 
-@workout_ns.route('/<int:workout_id>')
+@workout_ns.route('/<int:workout_id>/workout_exercises')
 class WorkoutExercises(Resource):
   @jwt_required()
   def get(self, workout_id):

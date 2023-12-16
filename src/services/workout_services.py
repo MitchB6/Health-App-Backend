@@ -10,8 +10,8 @@ from ..extensions import db
 
 def verify_coach_member_link(member_id):
   query = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
-  coach = query.all()
-  print(coach)
+  coach_id = query.first()
+  print(coach_id)
   link = CoachesMembersLink.query.filter_by(
       coach_id=coach_id, member_id=member_id, status='approved').first()
   return link
@@ -44,8 +44,11 @@ def create_workout(data):
 
 
 def get_workout(workout_id):
-  workout = Workout.query.get_or_404(workout_id)
-  response, status_code = workout.serialize(), 200
+  workout = Workout.query.filter_by(workout_id=workout_id).first()
+  if workout:
+    response, status_code = workout.serialize(), 200
+  else:
+    response, status_code = {"message": "Workout not found"}, 404
   return response, status_code
 
 
