@@ -9,7 +9,9 @@ workoutplan_ns = Namespace(
 
 create_workoutplan_model = workoutplan_ns.model('Create Workout Plan', {
     'plan_name': fields.String(description='Workout Plan Name'),
-    'plan_description': fields.String(description='Workout Plan Description')
+    'plan_description': fields.String(description='Workout Plan Description'),
+    'start_date': fields.Date(description='Workout Plan Start Date'),
+    'end_date': fields.Date(description='Workout Plan End Date')
 })
 
 update_workoutplan_model = workoutplan_ns.model('Update Workout Plan', {

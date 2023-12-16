@@ -1,8 +1,10 @@
 from flask import jsonify
 from flask_jwt_extended import get_jwt_identity
 
+from ..models.workout_model import Workout
 from ..models.workoutplan_model import WorkoutPlan
 from ..models.workoutplanlink_model import WorkoutPlanLink
+from ..extensions import db
 
 
 def create_plan(data):
@@ -11,10 +13,14 @@ def create_plan(data):
   new_plan = WorkoutPlan(
       member_id=member_id,
       plan_name=data.get('plan_name'),
-      description=data.get('plan_description')
+      description=data.get('plan_description'),
+      start_date=data.get('start_date'),
+      end_date=data.get('end_date')
   )
-  new_plan.create()
-  return {"message": "Plan created successfully"}, 201
+  db.session.add(new_plan)
+  db.session.flush()
+  db.session.commit()
+  return {"message": f"Plan created successfully: {new_plan.plan_id}"}, 201
 
 
 def get_member_plans():
@@ -50,13 +56,25 @@ def get_workouts_by_plan(plan_id):
 
 
 def add_workout_to_plan(plan_id, data):
-  new_workout_plan_link = WorkoutPlanLink(
+  workout = Workout.query.filter_by(workout_id=data.get('workout_id')).first()
+  if not workout:
+    return {"message": "Workout not found"}, 404
+  plan = WorkoutPlan.query.filter_by(plan_id=plan_id).first()
+  if not plan:
+    return {"message": "Plan not found"}, 404
+  sequence = WorkoutPlanLink.query.filter_by(
+      sequence=data.get('sequence')).first()
+  if sequence:
+    return {"message": "Sequence already exists"}, 409
+  new_link = WorkoutPlanLink(
       plan_id=plan_id,
       workout_id=data.get('workout_id'),
       sequence=data.get('sequence')
   )
-  new_workout_plan_link.save()
-  return {"message": "Workout added to plan successfully"}, 201
+  db.session.add(new_link)
+  db.session.flush()
+  db.session.commit()
+  return {"message": f"Workout added to plan successfully: {new_link.link_id}"}, 201
 
 
 def delete_workout_from_plan(link_id):
