@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_jwt_extended import (JWTManager, create_access_token,
-                                create_refresh_token, get_jwt_identity)
+                                create_refresh_token, get_jwt_identity, jwt_required)
 
 from ..models.member_model import Member
 from ..models.password_model import Password
@@ -100,7 +100,7 @@ def create_user(data):
 
   new_member = Member(role_id=role_id, email=email)
   db.session.add(new_member)
-  db.session.flush()  # Flush to get member_id
+  db.session.flush()
 
   new_personal_info = PersonalInfo(
       member_id=new_member.member_id,

@@ -26,11 +26,10 @@ class WorkoutStat(db.Model):
         'date': self.date
     }
 
-  def save(self, commit=False):
+  def save(self):
     """Saves a workout statistic to the database."""
     db.session.add(self)
-    if commit:
-      db.session.commit()
+    db.session.commit()
 
   def delete(self):
     """Deletes a workout statistic from the database."""

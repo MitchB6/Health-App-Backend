@@ -2,7 +2,7 @@ from flask_restx import Resource, Namespace, fields
 from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 
-from ..services.survey_services import get_user_survey, create_user_survey, update_user_survey, delete_user_survey
+from ..services.survey_services import *
 
 survey_ns = Namespace('survey', description='A namespace for User Survey')
 
@@ -20,7 +20,7 @@ survey_model = survey_ns.model(
 )
 
 
-@survey_ns.route('')
+@survey_ns.route('/')
 class SurveyResource(Resource):
   @jwt_required()
   def get(self):

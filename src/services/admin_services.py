@@ -21,8 +21,7 @@ def update_coach(data):
     return {"message": "Coach approved"}, 200
   else:
     print("DENIED", approved)
-    db.session.delete(coach)
-    db.session.commit()
+    coach.delete()
     return {"message": "Coach denied"}, 200
 
 

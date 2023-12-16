@@ -47,13 +47,3 @@ class WorkoutExercise(db.Model):
     """Deletes a workout exercise record from the database."""
     db.session.delete(self)
     db.session.commit()
-
-  def link_exercise(self, exercise_id, workout_id):
-    """Links an exercise to a workout exercise."""
-    self.exercise = exercise_id
-    self.workout = workout_id
-    self.save()
-
-  def find_by_workout(self, workout_id):
-    """Finds all exercises for a specific workout."""
-    return WorkoutExercise.query.filter_by(workout_id=workout_id).all()
