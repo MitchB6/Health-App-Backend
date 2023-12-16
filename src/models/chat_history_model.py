@@ -3,21 +3,26 @@ from ..extensions import db
 
 class Chats(db.Model):
   __tablename__ = 'chatHistory'
-
   id = db.Column(db.Integer, primary_key=True)
-  link_id = db.Column(db.Integer, db.ForeignKey(
-      'coaches_members_link.link_id'), nullable=False)
   chatkey = db.Column(db.String(100))
   message = db.Column(db.Text)
-  recorded_at = db.Column(db.Date, default=db.func.current_date())
+  sender = db.Column(db.Integer, db.ForeignKey(
+      'members.member_id'), nullable=False)
+  recipient = db.Column(db.Integer, db.ForeignKey(
+      'members.member_id'), nullable=False)
+  timestamp = db.Column(db.DateTime, nullable=False,
+                        default=db.func.current_timestamp())
 
+  # Relationships (example: assuming a User table exists)
+  # sender_user = db.relationship('User', foreign_keys=[sender])
+  # recipient_user = db.relationship('User', foreign_keys=[recipient])
 
-def serialize(self):
-  """Return object data in easily serializeable format."""
-  return {
-      'id': self.id,
-      'link_id': self.link_id,
-      'chatkey': self.chatkey,
-      'message': self.message,
-      'recorded_at': self.recorded_at.strftime('%Y-%m-%d') if self.recorded_at else None
-  }
+  def serialize(self):
+    return {
+        "id": self.id,
+        "chatkey": self.chatkey,
+        "message": self.message,
+        "sender": self.sender,
+        "recipient": self.recipient,
+        "timestamp": self.timestamp.isoformat(),  # Convert to ISO format string
+    }
