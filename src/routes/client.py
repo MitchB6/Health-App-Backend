@@ -28,7 +28,6 @@ class ClientRequests(Resource):
 
 
 @client_ns.route('/accept_request/<int:link_id>')
-@client_ns.route('/accept_request/<int:link_id>')
 class AcceptClientRequest(Resource):
   @coach_required
   def post(self, link_id):
@@ -38,7 +37,6 @@ class AcceptClientRequest(Resource):
     return make_response(response, status_code)
 
 
-@client_ns.route('/decline_request/<int:link_id>')
 @client_ns.route('/decline_request/<int:link_id>')
 class DeclineClientRequest(Resource):
   @coach_required
