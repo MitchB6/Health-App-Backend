@@ -59,7 +59,7 @@ def get_client_dashboard(client_id):
     return {'message': 'Not a coach'}, 404
   link = CoachesMembersLink.query.filter_by(
       coach_id=coach.coach_id, member_id=client_id, status='approved').first()
-  if not link or link.status != 'approved':
+  if link.status != 'approved':
     return {'message': 'Not a client'}, 404
 
   # Assuming there's a Workout model linked to a Member
