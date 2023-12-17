@@ -13,7 +13,6 @@ class WorkoutPlanLink(db.Model):
       'workout_plans.plan_id', ondelete='CASCADE'), nullable=False)
   workout_id = db.Column(db.Integer, db.ForeignKey(
       'workouts.workout_id'), nullable=False)
-  sequence = db.Column(db.Integer, nullable=False)
 
   workout_plan = db.relationship(
       'WorkoutPlan', back_populates='workout_plan_links')
