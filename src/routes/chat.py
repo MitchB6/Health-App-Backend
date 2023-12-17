@@ -3,20 +3,18 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import socketio
 from flask_socketio import emit
-from ..models.chat_history_model import Chats
+from ..models.chat_model import Chats
 from ..extensions import db
 
 chat_ns = Namespace('Chat', description="A namespace for Chat")
 
 chat_history = {}  # Dictionary to store chat history
 
-
 @chat_ns.route('/')
 class Chat(Resource):
   @jwt_required()
   def get(self):
     return jsonify({'message': 'chat check success'})
-
 
 @socketio.on('send_message')
 def handle_send_message(data):
@@ -25,15 +23,13 @@ def handle_send_message(data):
     recipient = data['recipient']
     text = data['text']
 
-    chat_key = tuple(sorted([sender, recipient]))
-    x = "-".join(chat_key)
-    print(x)
+    chat_key = f'{sender}-{recipient}'
 
-    # new_message = Chats(chatkey = x, sender=sender, recipient=recipient, message=text)
+    new_message = Chats(chatkey = chat_key, sender=sender, recipient=recipient, message=text)
     
-    # # Save the new message to the database 
-    # db.session.add(new_message)
-    # db.session.commit()
+    # Save the new message to the database 
+    db.session.add(new_message)
+    db.session.commit()
 
     
     print(data)
@@ -47,26 +43,24 @@ def handle_send_message(data):
         chat_history[chat_key] = [] 
     chat_history[chat_key].append(data)
 
-  emit('new_message', data, room=recipient)
-  emit('new_message', data, room=sender)
-
+    emit('new_message', data, room=recipient)
+    emit('new_message', data, room=sender)
 
 @socketio.on('request_history')
 def handle_request_history(data):
     user1 = data['user1']
     user2 = data['user2']
-    chat_key = tuple(sorted([user1, user2]))
+    chat_key = tuple(sorted([user1, user2])) 
     print(chat_key)
     print("-".join(chat_key))
 
     history = chat_history.get(chat_key, [])
-    emit('chat_history', history, room=user1)
-
+    emit('chat_history', history, room=chat_key)
 
 @socketio.on('connect')
 def handle_connect():
-  print('Client connected')
-
+    print('Client connected')
 
 @socketio.on('disconnect')
-  print('Client disconnected')
+def handle_disconnect():
+    print('Client disconnected')
