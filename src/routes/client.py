@@ -8,12 +8,11 @@ from ..services.decorators import coach_required
 client_ns = Namespace('clients', description="A namespace for clients")
 
 
-
 @client_ns.route('/')
 class AllClients(Resource):
   @coach_required
   def get(self):
-    """get all clients"""
+    """Get all clients"""
     print("get all clients"*10)
     client_list, status_code = get_all_clients()
     return make_response(client_list, status_code)
@@ -49,7 +48,6 @@ class DeclineClientRequest(Resource):
     return make_response(response, status_code)
 
 
-@client_ns.route('/client_dashboard/<int:member_id>')
 @client_ns.route('/client_dashboard/<int:member_id>')
 class ClientDashboard(Resource):
   @coach_required
