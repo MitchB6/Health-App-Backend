@@ -15,6 +15,7 @@ class WorkoutExercise(db.Model):
       'exercises.exercise_id'), nullable=False)
   sets = db.Column(db.Integer, nullable=True)
   reps = db.Column(db.Integer, nullable=True)
+  sequence = db.Column(db.Integer, nullable=True)
   notes = db.Column(db.Text, nullable=True)
 
   workout = db.relationship('Workout', back_populates='workout_exercises')
