@@ -45,13 +45,6 @@ def decline_client_request(request_id):
     db.session.commit()
     return {'message': 'Client request declined'}, 200
   return {'message': 'Request not found'}, 404
-  request = CoachesMembersLink.query.get(request_id)
-  if request:
-    db.session.delete(request)
-    db.session.commit()
-    return {'message': 'Client request declined'}, 200
-  return {'message': 'Request not found'}, 404
-
 
 
 def get_client_dashboard(client_id):
