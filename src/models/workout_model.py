@@ -36,6 +36,7 @@ class Workout(db.Model):
   def save(self):
     """Save or update a workout."""
     db.session.add(self)
+    db.session.flush()
     db.session.commit()
 
   def delete(self):

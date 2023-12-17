@@ -43,8 +43,6 @@ create_workout_stat = workout_ns.model('Create Workout Stat', {
     'calories_burned': fields.Integer(description='Calories burned')
 })
 
-"""Good"""
-
 
 @workout_ns.route('/')
 class WorkoutList(Resource):
@@ -197,7 +195,7 @@ class WorkoutsMemberID(Resource):
   def get(self, member_id):
     """
     Get all workouts for a specific member
-
+    GOOD
     """
     result, status_code = get_workouts_by_member(member_id)
 
@@ -206,20 +204,43 @@ class WorkoutsMemberID(Resource):
   @jwt_required()
   @workout_ns.expect(workout_model)
   def post(self, member_id):
-    """Create a new workout for a specific member"""
+    """
+    Create a new workout for a specific member
+    GOOD
+    """
     data = request.get_json()
     result, status_code = create_workout_for_member(member_id, data)
     return make_response(result, status_code)
 
+
+@workout_ns.route('/member/<int:member_id>/workout/<int:workout_id>')
+class WorkoutsMemberIDWorkoutID(Resource):
   @jwt_required()
-  def put(self, member_id):
-    """Update an existing workout for a specific member"""
-    data = request.get_json()
-    result, status_code = update_workout_for_member(member_id, data)
+  def get(self, member_id, workout_id):
+    """
+    Get a specific workout for a specific member
+    GOOD
+    """
+    result, status_code = get_workout_for_member(member_id, workout_id)
     return make_response(result, status_code)
 
   @jwt_required()
-  def delete(self, member_id):
-    """Delete an existing workout for a specific member"""
-    result, status_code = delete_workout_for_member(member_id)
+  @workout_ns.expect(workout_model)
+  def put(self, member_id, workout_id):
+    """
+    Update an existing workout for a specific member
+    GOOD
+    """
+    data = request.get_json()
+    result, status_code = update_workout_for_member(
+        data, member_id, workout_id)
+    return make_response(result, status_code)
+
+  @jwt_required()
+  def delete(self, member_id, workout_id):
+    """
+    Delete an existing workout for a specific member
+    GOOD
+    """
+    result, status_code = delete_workout_for_member(member_id, workout_id)
     return make_response(result, status_code)
