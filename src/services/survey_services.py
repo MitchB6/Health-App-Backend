@@ -18,17 +18,15 @@ def get_user_survey():
 def create_user_survey(data):
 
   member_id = get_jwt_identity()
-  energy_level = data.get('energy_level')
   mood_level = data.get('mood_level')
   hydration_level = data.get('hydration_level')
   calories_intake = data.get('calories_intake')
-  if not energy_level or not mood_level or not hydration_level or not calories_intake:
+  if not mood_level or not hydration_level or not calories_intake:
     response, status_code = {"message": "Missing required fields"}, 400
     return response, status_code
 
   new_survey = Survey(
       member_id=member_id,
-      energy_level=energy_level,
       mood_level=mood_level,
       hydration_level=hydration_level,
       calories_intake=calories_intake

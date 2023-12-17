@@ -10,10 +10,12 @@ from ..extensions import db
 
 def get_all_clients():
   coach = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
-  coach_id = coach.coach_id
-  query = CoachesMembersLink.query.filter_by(
-      coach_id=coach_id, status="approved")
-  clients = query.all()
+  if not coach:
+    return {'message': 'Not a coach or coach not found'}, 404
+
+  clients = CoachesMembersLink.query.filter_by(
+      coach_id=coach.coach_id, status="approved").all()
+
   if clients:
     serialized_clients = [client.serialize() for client in clients]
     return serialized_clients, 200
@@ -23,10 +25,12 @@ def get_all_clients():
 
 def get_client_requests():
   coach = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
-  coach_id = coach.coach_id
-  query = CoachesMembersLink.query.filter_by(
-      coach_id=coach_id, status="pending")
-  requests = query.all()
+  if not coach:
+    return {'message': 'Not a coach or coach not found'}, 404
+
+  requests = CoachesMembersLink.query.filter_by(
+      coach_id=coach.coach_id, status="pending").all()
+
   if requests:
     serialized_requests = [request.serialize() for request in requests]
     return serialized_requests, 200
