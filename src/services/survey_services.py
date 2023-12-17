@@ -1,6 +1,7 @@
 from flask_jwt_extended import get_jwt_identity
 
 from ..models.survey_model import Survey
+from ..services.validations import *
 
 
 def get_user_survey():
@@ -23,6 +24,18 @@ def create_user_survey(data):
   calories_intake = data.get('calories_intake')
   if not mood_level or not hydration_level or not calories_intake:
     response, status_code = {"message": "Missing required fields"}, 400
+    return response, status_code
+
+  if not validate_mood_level(mood_level):
+    response, status_code = {"message": "Invalid mood level"}, 400
+    return response, status_code
+
+  if not validate_hydration_level(hydration_level):
+    response, status_code = {"message": "Invalid hydration level"}, 400
+    return response, status_code
+
+  if not validate_calories_intake(calories_intake):
+    response, status_code = {"message": "Invalid calories intake"}, 400
     return response, status_code
 
   new_survey = Survey(

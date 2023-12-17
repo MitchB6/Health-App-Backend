@@ -30,7 +30,6 @@ class WorkoutExercise(db.Model):
         "exercise_id": self.exercise_id,
         "sets": self.sets,
         "reps": self.reps,
-        "sequence": self.sequence,
         "notes": self.notes,
         "name": exercise_info.name if exercise_info else None,
         "description": exercise_info.description if exercise_info else None,

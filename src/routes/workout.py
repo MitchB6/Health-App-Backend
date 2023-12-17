@@ -19,7 +19,6 @@ workout_exercise_link = workout_ns.model('Workout_Exercise', {
     'exercise_id': fields.Integer(required=True, description='Exercise ID'),
     'sets': fields.Integer(description='Number of sets'),
     'reps': fields.Integer(description='Number of repetitions'),
-    'sequence': fields.Integer(description='Exercise sequence'),
     'notes': fields.String(description='Additional notes'),
 })
 
@@ -27,14 +26,12 @@ create_workout_exercise_link = workout_ns.model('Create Workout_Exercise', {
     'exercise_id': fields.Integer(description='Exercise ID'),
     'sets': fields.Integer(description='Number of sets'),
     'reps': fields.Integer(description='Number of repetitions'),
-    'sequence': fields.Integer(description='Exercise sequence'),
     'notes': fields.String(description='Additional notes'),
 })
 
 update_workout_exercise_link = workout_ns.model('Update Workout_Exercise', {
     'sets': fields.Integer(description='Number of sets'),
     'reps': fields.Integer(description='Number of repetitions'),
-    'sequence': fields.Integer(description='Exercise sequence'),
     'notes': fields.String(description='Additional notes'),
 })
 
