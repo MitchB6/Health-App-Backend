@@ -5,6 +5,7 @@ from ..models.member_model import Member
 from ..models.goals_model import MemberGoals
 from ..models.personalinfo_model import PersonalInfo
 from ..extensions import db
+from ..services.validations import *
 
 
 def marshal_membersettings(member, personal_info):
@@ -52,11 +53,29 @@ def update_member_settings(data):
   allowed_fields_member = ['email']
   allowed_fields_personal_info = ['username', 'phone', 'first_name', 'last_name', 'city', 'state', 'zip_code',
                                   'birthdate', 'height', 'weight', 'age', 'gender']
+
+  validation_functions = {
+      'email': validate_email,
+      'phone': validate_phone,
+      'first_name': validate_first_name,
+      'last_name': validate_last_name,
+      'city': validate_city,
+      'state': validate_state,
+      'zip_code': validate_zip_code,
+      'birthdate': validate_birthdate,
+      'height': validate_height,
+      'weight': validate_weight,
+      # Add other validations as needed
+  }
+
   for key, value in data.items():
-    if key in allowed_fields_member and value is not None:
-      setattr(member, key, value)
-    elif key in allowed_fields_personal_info and value is not None:
-      setattr(member.personal_info, key, value)
+    if key in allowed_fields_member + allowed_fields_personal_info and value is not None:
+      if key in validation_functions and not validation_functions[key](value):
+        return {"message": f"Invalid {key}"}, 400
+      if key in allowed_fields_member:
+        setattr(member, key, value)
+      elif key in allowed_fields_personal_info:
+        setattr(member.personal_info, key, value)
   db.session.commit()
   return {"message": "Member settings updated successfully."}, 200
 

@@ -4,8 +4,9 @@ from flask_jwt_extended import jwt_required
 
 from ..services.workoutplan_services import *
 
+# changed 'workout plans' to 'workout_plans'
 workoutplan_ns = Namespace(
-    'workout plans', description='Workout plans related operations')
+    'workout_plans', description='Workout plans related operations')
 
 create_workoutplan_model = workoutplan_ns.model('Create Workout Plan', {
     'plan_name': fields.String(description='Workout Plan Name'),

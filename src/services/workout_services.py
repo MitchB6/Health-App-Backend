@@ -172,7 +172,6 @@ def add_exercise_to_workout(workout_id, data):
       exercise_id=data.get('exercise_id'),
       sets=data.get('sets'),
       reps=data.get('reps'),
-      sequence=data.get('sequence'),
       notes=data.get('notes')
   )
   new_workout_exercise.save()
@@ -187,7 +186,6 @@ def update_exercise_in_workout(workout_exercise_id, data):
   if exercise:
     exercise.sets = data.get('sets')
     exercise.reps = data.get('reps')
-    exercise.sequence = data.get('sequence')
     exercise.notes = data.get('notes')
     exercise.save()
     return {"message": "Exercise updated successfully"}, 200

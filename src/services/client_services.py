@@ -24,18 +24,18 @@ def get_all_clients():
 
 
 def get_client_requests():
-  coach = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
-  if not coach:
-    return {'message': 'Not a coach or coach not found'}, 404
+  try:
+    coach = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
+    if not coach:
+      return {'message': 'Not a coach or coach not found'}, 404
 
-  requests = CoachesMembersLink.query.filter_by(
-      coach_id=coach.coach_id, status="pending").all()
+    requests = CoachesMembersLink.query.filter_by(
+        coach_id=coach.coach_id, status="pending").all()
 
-  if requests:
     serialized_requests = [request.serialize() for request in requests]
     return serialized_requests, 200
-  else:
-    return {"message": "No requests found"}, 404
+  except Exception as e:
+    return {'message': 'An error occurred while fetching requests'}, 500
 
 
 def accept_client_request(request_id):
