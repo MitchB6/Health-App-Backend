@@ -29,15 +29,9 @@ def handle_send_message(data):
   x = "-".join(chat_key)
   print(x)
 
-  # new_message = Chats(chatkey = x, sender=sender, recipient=recipient, message=text)
-
-  # # Save the new message to the database
-  # db.session.add(new_message)
-  # db.session.commit()
-
-  print(data)
-  print(chat_key)
-  print(chat_history)
+  new_message = Chats(chatkey=x, sender=1, recipient=10, message=text)
+  db.session.add(new_message)
+  db.session.commit()
 
   if chat_key not in chat_history:
     chat_history[chat_key] = []

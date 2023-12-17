@@ -28,6 +28,10 @@ class Member(db.Model):
       'WorkoutPlan', back_populates='member', cascade='all, delete-orphan')
   surveys = db.relationship(
       'Survey', back_populates='member', cascade='all, delete-orphan')
+  sent_chats = db.relationship('Chats', foreign_keys='Chats.sender',
+                               backref='sender_member', lazy='dynamic')
+  received_chats = db.relationship('Chats', foreign_keys='Chats.recipient',
+                                   backref='recipient_member', lazy='dynamic')
 
   def delete(self):
     """ Permanently delete the member """
