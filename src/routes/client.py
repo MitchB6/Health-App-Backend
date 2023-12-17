@@ -12,7 +12,10 @@ client_ns = Namespace('clients', description="A namespace for clients")
 class AllClients(Resource):
   @coach_required
   def get(self):
-    """Get all clients"""
+    """
+    Get all clients
+    GOOD
+    """
     print("get all clients"*10)
     client_list, status_code = get_all_clients()
     return make_response(client_list, status_code)
@@ -22,7 +25,10 @@ class AllClients(Resource):
 class ClientRequests(Resource):
   @coach_required
   def get(self):
-    """Get all client requests"""
+    """
+    Get all client requests
+    GOOD
+    """
     request_list, status_code = get_client_requests()
     return make_response(request_list, status_code)
 
@@ -31,7 +37,10 @@ class ClientRequests(Resource):
 class AcceptClientRequest(Resource):
   @coach_required
   def post(self, link_id):
-    """Accept a client request"""
+    """
+    Accept a client request
+    GOOD
+    """
     print("this is the link is", link_id)
     response, status_code = accept_client_request(link_id)
     return make_response(response, status_code)
@@ -41,7 +50,10 @@ class AcceptClientRequest(Resource):
 class DeclineClientRequest(Resource):
   @coach_required
   def post(self, link_id):
-    """Decline a client request"""
+    """
+    Decline a client request
+    GOOD
+    """
     response, status_code = decline_client_request(link_id)
     return make_response(response, status_code)
 
@@ -50,6 +62,9 @@ class DeclineClientRequest(Resource):
 class ClientDashboard(Resource):
   @coach_required
   def get(self, member_id):
-    """Get a client's dashboard"""
+    """
+    Get a client's dashboard
+    GOOD
+    """
     dashboard_data = get_client_dashboard(member_id)
     return make_response(dashboard_data, 200)
