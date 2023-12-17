@@ -185,6 +185,7 @@ def update_exercise_in_workout(workout_exercise_id, data):
   exercise = WorkoutExercise.query.filter_by(
       workout_exercise_id=workout_exercise_id).first()
   if exercise:
+    exercise.exercise_id = data.get('exercise_id')
     exercise.sets = data.get('sets')
     exercise.reps = data.get('reps')
     exercise.sequence = data.get('sequence')
