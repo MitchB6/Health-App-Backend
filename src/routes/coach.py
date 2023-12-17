@@ -7,6 +7,12 @@ from ..services.coach_services import *
 
 coach_ns = Namespace('coaches', description="A namespace for coaches")
 
+specializations = ['Weight Loss', 'Weight Gain', 'Body Building',
+                   'General Fitness', 'Yoga', 'Pilates', 'Crossfit',]
+schedules = ['Weekdays', 'Weekends', 'Weekdays and Weekends']
+qualifications = ['ACE', 'ACSM', 'NASM', 'ISSA', 'NSCA', 'NCSF',
+                  'NCCPT', 'NESTA', 'NCSM', 'NFPT', 'Cooper Institute', 'Other']
+
 hire_request_model = coach_ns.model('HireRequest', {
     'member_id': fields.Integer(required=True, description='Client ID'),
     'coach_id': fields.Integer(required=True, description='Coach ID'),
