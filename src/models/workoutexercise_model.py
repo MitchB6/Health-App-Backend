@@ -41,6 +41,7 @@ class WorkoutExercise(db.Model):
   def save(self):
     """Saves a workout exercise record to the database."""
     db.session.add(self)
+    db.session.flush()
     db.session.commit()
 
   def delete(self):

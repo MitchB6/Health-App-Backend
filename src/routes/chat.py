@@ -26,22 +26,19 @@ def handle_send_message(data):
     chat_key = f'{sender}-{recipient}'
 
     new_message = Chats(chatkey = chat_key, sender=sender, recipient=recipient, message=text)
-    
+
     # Save the new message to the database 
     db.session.add(new_message)
     db.session.commit()
 
-    
+
     print(data)
     print(chat_key)
     print(chat_history)
 
-
-    
-
     if chat_key not in chat_history:
-        chat_history[chat_key] = [] 
-    chat_history[chat_key].append(data)
+        chat_history[chat_key] = []
+        chat_history[chat_key].append(data)
 
     emit('new_message', data, room=recipient)
     emit('new_message', data, room=sender)
