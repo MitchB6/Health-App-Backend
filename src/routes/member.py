@@ -69,11 +69,3 @@ class MemberSettingsResource(Resource):
     """
     result, status_code = delete_member()
     return make_response(jsonify(result), status_code)
-
-
-@member_ns.route('/goals')
-class MemberGoals(Resource):
-  @jwt_required()
-  def get(self):
-    result, status_code = get_member_goals()
-    return make_response(jsonify(result), status_code)
