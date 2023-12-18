@@ -23,7 +23,6 @@ class Survey(db.Model):
         'survey_id': self.survey_id,
         'member_id': self.member_id,
         'date': self.date,
-        'energy_level': self.energy_level,
         'mood_level': self.mood_level,
         'hydration_level': self.hydration_level,
         'calories_intake': self.calories_intake,
