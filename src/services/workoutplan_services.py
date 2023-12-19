@@ -62,14 +62,10 @@ def add_workout_to_plan(plan_id, data):
   plan = WorkoutPlan.query.filter_by(plan_id=plan_id).first()
   if not plan:
     return {"message": "Plan not found"}, 404
-  sequence = WorkoutPlanLink.query.filter_by(
-      sequence=data.get('sequence')).first()
-  if sequence:
-    return {"message": "Sequence already exists"}, 409
+
   new_link = WorkoutPlanLink(
       plan_id=plan_id,
-      workout_id=data.get('workout_id'),
-      sequence=data.get('sequence')
+      workout_id=data.get('workout_id')
   )
   db.session.add(new_link)
   db.session.flush()
@@ -92,7 +88,6 @@ def update_workout_in_plan(data):
   workout_plan_link = WorkoutPlanLink.query.filter_by(
       link_id=link_id).first()
   if workout_plan_link:
-    workout_plan_link.sequence = data.get('sequence')
     workout_plan_link.save()
     return {"message": "Workout updated in plan successfully"}, 200
   else:
