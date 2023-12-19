@@ -17,7 +17,7 @@ class WorkoutPlan(db.Model):
 
   member = db.relationship('Member', back_populates='workout_plans')
   workout_plan_links = db.relationship(
-      'WorkoutPlanLink', back_populates='workout_plan', order_by='WorkoutPlanLink.sequence')
+      'WorkoutPlanLink', back_populates='workout_plan')
 
   def serialize(self):
     """Return object data in easily serializeable format"""
