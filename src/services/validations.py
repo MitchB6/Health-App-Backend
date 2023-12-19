@@ -104,6 +104,3 @@ def validate_calories_burned(calories_burned):
 
 def validate_workout_name(workout_name):
   return len(workout_name) > 0
-
-def validate_gender(gender):
-  return 

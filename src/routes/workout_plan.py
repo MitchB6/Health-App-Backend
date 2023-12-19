@@ -17,12 +17,12 @@ create_workoutplan_model = workoutplan_ns.model('Create Workout Plan', {
 
 update_workoutplan_model = workoutplan_ns.model('Update Workout Plan', {
     'link_id': fields.Integer(description='Workout Plan Link ID'),
-    'sequence': fields.Integer(description='Exercise sequence')
+    'plan_name': fields.String(description='Workout Plan Name'),
 })
 
 add_workout_to_plan_model = workoutplan_ns.model('AddWorkoutToPlan', {
     'workout_id': fields.Integer(required=True, description='ID of the workout to add'),
-    'sequence': fields.Integer(required=True, description='Sequence of the workout in the plan'),
+    'plan_name': fields.String(description='Workout Plan Name')
 })
 
 
