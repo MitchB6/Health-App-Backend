@@ -60,7 +60,6 @@ def update_user_survey(survey_id, data):
   survey = Survey.query.get_or_404(survey_id)
 
   if survey:
-    survey.energy_level = data.get('energy_level', survey.energy_level)
     survey.mood_level = data.get('mood_level', survey.mood_level)
     survey.hydration_level = data.get(
         'hydration_level', survey.hydration_level)
