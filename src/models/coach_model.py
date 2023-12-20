@@ -1,3 +1,4 @@
+from ..models.personalinfo_model import PersonalInfo
 from ..extensions import db
 
 # The CoachInfo class represents coach information in a database and provides methods for saving,
@@ -24,26 +25,24 @@ class CoachInfo(db.Model):
       'Member', secondary='coaches_members_link', back_populates='coaches')
 
   def serialize(self):
-    """Serialize the CoachInfo object to a dictionary."""
+    personal_info = PersonalInfo.query.filter_by(
+        member_id=self.member_id).first()
     return {
         'coach_id': self.coach_id,
         'member_id': self.member_id,
+        'first_name': personal_info.first_name if personal_info else None,
+        'last_name': personal_info.last_name if personal_info else None,
         'specialization': self.specialization,
-        'price': float(self.price),  # Convert to float for JSON serialization
+        'price': float(self.price),
         'location': self.location,
         'schedule_general': self.schedule_general,
         'qualifications': self.qualifications,
         'approved': self.approved
     }
 
-  def save(self, ):
+  def save(self):
     """Saves coach information to the database."""
     db.session.add(self)
-    db.session.commit()
-
-  def delete(self):
-    """Deletes coach information from the database."""
-    db.session.delete(self)
     db.session.commit()
 
   def update(self, **kwargs):
@@ -53,7 +52,6 @@ class CoachInfo(db.Model):
         setattr(self, key, value)
     db.session.commit()
 
-  @classmethod
-  def all_coaches(cls):
-    """Returns all registered coaches."""
-    return cls.query.all()
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()

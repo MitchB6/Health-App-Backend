@@ -1,20 +1,51 @@
+from flask_jwt_extended import get_jwt_identity
+
 from ..models.coach_model import CoachInfo
-
-# Function to get all coaches
-
-
-def get_all_coaches():
-  coaches = CoachInfo.all_coaches()
-  serialized_coaches = [coach.serialize() for coach in coaches]
-  return serialized_coaches, 200
-
-# Function to get a coach by coach_id
+from ..models.coachmemberslink_model import CoachesMembersLink
+from ..extensions import db
 
 
-def get_coach(coach_id):
-  coach = CoachInfo.query.get(coach_id)
-  if coach:
-    serialized_coach = coach.serialize()
-    return serialized_coach, 200
+def search_coaches(specialization=None, price=0.00, location=None):
+  query = CoachInfo.query.filter_by(approved=True)
+
+  if specialization:
+    query = query.filter_by(specialization=specialization)
+
+  if price is not None:
+    price = float(price)
+    if price > 0.00:
+      query = query.filter(CoachInfo.price <= price)
+
+  if location:
+    query = query.filter_by(location=location)
+
+  coaches = query.all()
+
+  if coaches:
+    serialized_coaches = [coach.serialize() for coach in coaches]
+    return serialized_coaches, 200
   else:
-    return {"message": "Coach not found"}, 404
+    return {"message": "No coaches found"}, 404
+
+
+def link_request(coach_id):
+  member_id = get_jwt_identity()
+
+  if not member_id or not coach_id:
+    return {'message': 'Client name and coach ID are required'}, 400
+
+  coach = CoachInfo.query.get(coach_id)
+
+  if not coach:
+    return {'message': 'Coach not found'}, 404
+
+  existing_link = CoachesMembersLink.query.filter_by(
+      coach_id=coach_id, member_id=member_id).first()
+
+  if not existing_link:
+    new_link = CoachesMembersLink(coach_id=coach.coach_id, member_id=member_id)
+    db.session.add(new_link)
+    db.session.commit()
+  else:
+    return {'message': 'Hire request already submitted'}, 400
+  return {'message': 'Hire request submitted successfully'}, 201

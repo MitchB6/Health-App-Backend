@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_jwt_extended import (JWTManager, create_access_token,
-                                create_refresh_token, get_jwt_identity)
+                                create_refresh_token, get_jwt_identity, jwt_required)
 
 from ..models.member_model import Member
 from ..models.password_model import Password
@@ -55,29 +55,6 @@ def create_coach(data):
   return {"message": "Coach form submitted successfully"}, 200
 
 
-def update_coach(data):
-  approved = bool(data.get('approved'))
-  coach = CoachInfo.query.get(data.get('coach_id'))
-  if coach is None:
-    return {"message": "Coach not found"}, 404
-
-  if approved:
-    print("APPROVAL", approved)
-    coach.approved = approved
-    coach.member.role_id = 1
-    db.session.commit()
-    return {"message": "Coach approved"}, 200
-  else:
-    db.CoachInfo.delete(coach)
-    return {"message": "Coach denied"}, 200
-
-
-def get_all_coach_forms():
-  forms = CoachInfo.query.filter_by(approved=False).all()
-  serialized_forms = [form.serialize() for form in forms]
-  return serialized_forms, 200
-
-
 def change_password(data):
   get_jwt_identity()
   current_member_id = get_jwt_identity()
@@ -123,7 +100,7 @@ def create_user(data):
 
   new_member = Member(role_id=role_id, email=email)
   db.session.add(new_member)
-  db.session.flush()  # Flush to get member_id
+  db.session.flush()
 
   new_personal_info = PersonalInfo(
       member_id=new_member.member_id,

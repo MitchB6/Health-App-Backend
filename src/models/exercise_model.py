@@ -11,10 +11,21 @@ class Exercise(db.Model):
   description = db.Column(db.Text, nullable=True)
   muscle_group = db.Column(db.String(255), nullable=True)
   equipment = db.Column(db.String(255), nullable=True)
+  is_active = db.Column(db.Boolean, nullable=False, default=True)
 
   stats = db.relationship("ExerciseStat", back_populates="exercise")
   workout_exercises = db.relationship(
       "WorkoutExercise", back_populates="exercise")
+
+  def serialize(self):
+    return {
+        "exercise_id": self.exercise_id,
+        "name": self.name,
+        "description": self.description,
+        "muscle_group": self.muscle_group,
+        "equipment": self.equipment,
+        "is_active": self.is_active,
+    }
 
   def save(self):
     """Saves the exercise to the database."""

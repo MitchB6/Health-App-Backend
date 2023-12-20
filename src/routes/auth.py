@@ -1,9 +1,10 @@
 from flask import jsonify, request, make_response
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required
+from ..extensions import socketio
+from flask_socketio import emit
 
 from ..services.auth_services import *
-from ..services.decorators import admin_required
 
 auth_ns = Namespace('auth', description="A namespace for Authentication")
 
@@ -53,14 +54,6 @@ change_password_model = auth_ns.model(
     }
 )
 
-coach_approval_model = auth_ns.model(
-    "CoachApproval",
-    {
-        "member_id": fields.Integer(required=True),
-        "approved": fields.Boolean(required=True)
-    }
-)
-
 
 @auth_ns.route('/signup')
 @auth_ns.doc(responses={
@@ -76,7 +69,10 @@ class SignUp(Resource):
       409: 'Email already exists'
   })
   def post(self):
-    """User signup with email and password"""
+    """
+    User signup with email and password
+    GOOD
+    """
     data = request.get_json()
     result, status_code = create_user(data)
     return make_response(jsonify(result), status_code)
@@ -89,11 +85,13 @@ class SignUp(Resource):
     409: 'Email already exists'
 })
 class CoachSignUp(Resource):
-
   @jwt_required(optional=True)
   @auth_ns.expect(coach_signup_model)
   def post(self):
-    """Coach form submission"""
+    """
+    Coach form submission
+    GOOD
+    """
     data = request.get_json()
 
     if not data.get('member_id'):
@@ -105,37 +103,54 @@ class CoachSignUp(Resource):
     result, status_code = create_coach(data)
     return make_response(jsonify(result), status_code)
 
-  @jwt_required()
-  @admin_required
-  def get(self):
-    """Get all coach forms"""
-    result, status_code = get_all_coach_forms()
-    return make_response(jsonify(result), status_code)
-
-  @jwt_required()
-  @admin_required
-  @auth_ns.expect(coach_approval_model)
-  def put(self):
-    """Approve coach form"""
-    data = request.get_json()
-    result, status_code = update_coach(data)
-    return make_response(jsonify(result), status_code)
-
 
 @auth_ns.route('/login')
 class Login(Resource):
   @auth_ns.expect(login_model)
-  @auth_ns.doc(responses={
-      200: 'Success',
-      400: 'Missing required fields',
-      401: 'Invalid credentials',
-      409: 'User does not exist'
-  })
+  @auth_ns.doc(
+      responses={
+          200: 'Success',
+          400: 'Missing required fields',
+          401: 'Invalid credentials',
+          409: 'User does not exist'
+      }
+  )
   def post(self):
-    """User login using email and password"""
+    """
+    User login using email and password
+    GOOD
+    """
     data = request.get_json()
     result, status_code = login_user(data)
     return make_response(jsonify(result), status_code)
+
+
+@auth_ns.route('/chat')
+class Chat(Resource):
+  #   @auth_ns.expect(chat_model)
+  #   @auth_ns.doc(
+  #       responses={
+  #           200: 'Success',
+  #           400: 'Missing required fields',
+  #           401: 'Invalid credentials',
+  #           409: 'User does not exist'
+  #       }
+  #   )
+  def post(self):
+    #     """Send chat with username and recepent username"""
+    #     data = request.get_json()
+    #     result, status_code = login_user(data)
+    #    return make_response(jsonify(result), status_code)
+    print("just checkin")
+    emit('connect')
+    return jsonify({"message": "this really worked????"})
+
+
+@socketio.on('connect')
+def handle_connect():
+  print('Client connected \n')
+  print('Client connected \n')
+  print('Client connected \n')
 
 
 @auth_ns.route('/refresh')
@@ -147,7 +162,10 @@ class RefreshResource(Resource):
   @auth_ns.expect(security='Bearer Auth')
   @jwt_required(refresh=True)
   def post(self):
-    """User gets new access token with refresh token"""
+    """
+    User gets new access token with refresh token
+    GOOD
+    """
     result, status_code = refresh_access_token()
     return make_response(jsonify(result), status_code)
 
@@ -161,7 +179,10 @@ class ChangePasswordResource(Resource):
   })
   @jwt_required()
   def post(self):
-    """User change their password"""
+    """
+    User change their password
+    GOOD
+    """
     data = request.get_json()
 
     result, status_code = change_password(data)

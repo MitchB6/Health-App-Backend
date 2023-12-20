@@ -11,7 +11,8 @@ class Member(db.Model):
   member_id = db.Column(db.Integer, primary_key=True)
   email = db.Column(db.String(100), nullable=True, unique=True)
   role_id = db.Column(db.Integer, nullable=False, default=0)
-  join_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+  join_date = db.Column(db.Date, nullable=False,
+                        default=datetime.utcnow().date())
 
   personal_info = db.relationship(
       'PersonalInfo', back_populates='member', uselist=False, cascade='all, delete-orphan')
@@ -27,12 +28,6 @@ class Member(db.Model):
       'WorkoutPlan', back_populates='member', cascade='all, delete-orphan')
   surveys = db.relationship(
       'Survey', back_populates='member', cascade='all, delete-orphan')
-
-  def __repr__(self):
-    """String representation of a Member instance."""
-    if self.personal_info:
-      return f"<Member {self.personal_info.first_name} {self.personal_info.last_name}>"
-    return f"<Member {self.member_id}>"
 
   def delete(self):
     """ Permanently delete the member """

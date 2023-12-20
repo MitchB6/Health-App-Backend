@@ -41,7 +41,6 @@ member_settings_model = member_ns.model(
 @member_ns.route('/settings')
 @member_ns.response(404, 'Member not found.')
 class MemberSettingsResource(Resource):
-  # @member_ns.marshal_with(member_settings_model)
   @jwt_required()
   def get(self):
     """
