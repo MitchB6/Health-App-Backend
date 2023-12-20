@@ -1,0 +1,23 @@
+language: python
+python:
+  - "3.8"
+
+services:
+  - mysql
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - mysql -e 'CREATE DATABASE test_db;'
+
+script:
+  - python -m unittest discover -s tests/
+
+env:
+  global:
+    - FLASK_ENV=testing
+    - DATABASE_URL=mysql://travis@localhost/test_db
+
+notifications:
+  email: false
