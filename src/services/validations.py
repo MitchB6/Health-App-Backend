@@ -19,11 +19,11 @@ def validate_phone(phone):
 
 
 def validate_height(height):
-  return 50 <= height <= 300
+  return 50 <= int(height) <= 300
 
 
 def validate_weight(weight):
-  return 2 <= weight <= 500
+  return 2 <= int(weight) <= 500
 
 
 def validate_zip_code(zip_code):
