@@ -92,7 +92,7 @@ def create_user(data):
     return {"message": "Invalid phone format"}, 400
   # Validate password
   if not validate_password(password):
-    return {"message": "Password must be at least 8 characters long"}, 400
+    return {"message": "Password must be at least 8 characters long, contain one upper, one lower, a number, and a special character"}, 400
 
   # Check if email already exists
   if Member.query.filter_by(email=email).first():

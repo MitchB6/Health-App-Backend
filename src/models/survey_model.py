@@ -25,7 +25,7 @@ class Survey(db.Model):
         'mood_level': self.mood_level,
         'hydration_level': self.hydration_level,
         'calories_intake': self.calories_intake,
-        'recorded_at': self.recorded_at
+        'recorded_at': self.recorded_at.strftime('%Y-%m-%d') if self.recorded_at else None
     }
 
   def save(self):
