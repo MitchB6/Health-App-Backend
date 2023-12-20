@@ -20,8 +20,11 @@ coach_approval_model = admin_ns.model(
 class AdminResource(Resource):
   @jwt_required()
   @admin_required
-  def get(self): 
-    """Get all coach forms"""
+  def get(self):
+    """
+    Get all coach forms
+    GOOD
+    """
     result, status_code = get_all_coach_forms()
     return make_response(jsonify(result), status_code)
 
@@ -29,7 +32,10 @@ class AdminResource(Resource):
   @admin_required
   @admin_ns.expect(coach_approval_model)
   def put(self):
-    """Approve/deny coach form"""
+    """
+    Approve/deny coach form
+    GOOD
+    """
     data = request.get_json()
     result, status_code = update_coach(data)
     return make_response(jsonify(result), status_code)

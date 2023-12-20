@@ -1,6 +1,7 @@
 from flask_jwt_extended import get_jwt_identity
 
 from ..models.survey_model import Survey
+from ..services.validations import *
 
 
 def get_user_survey():
@@ -18,17 +19,27 @@ def get_user_survey():
 def create_user_survey(data):
 
   member_id = get_jwt_identity()
-  energy_level = data.get('energy_level')
   mood_level = data.get('mood_level')
   hydration_level = data.get('hydration_level')
   calories_intake = data.get('calories_intake')
-  if not energy_level or not mood_level or not hydration_level or not calories_intake:
+  if not mood_level or not hydration_level or not calories_intake:
     response, status_code = {"message": "Missing required fields"}, 400
+    return response, status_code
+
+  if not validate_mood_level(mood_level):
+    response, status_code = {"message": "Invalid mood level"}, 400
+    return response, status_code
+
+  if not validate_hydration_level(hydration_level):
+    response, status_code = {"message": "Invalid hydration level"}, 400
+    return response, status_code
+
+  if not validate_calories_intake(calories_intake):
+    response, status_code = {"message": "Invalid calories intake"}, 400
     return response, status_code
 
   new_survey = Survey(
       member_id=member_id,
-      energy_level=energy_level,
       mood_level=mood_level,
       hydration_level=hydration_level,
       calories_intake=calories_intake
@@ -49,7 +60,6 @@ def update_user_survey(survey_id, data):
   survey = Survey.query.get_or_404(survey_id)
 
   if survey:
-    survey.energy_level = data.get('energy_level', survey.energy_level)
     survey.mood_level = data.get('mood_level', survey.mood_level)
     survey.hydration_level = data.get(
         'hydration_level', survey.hydration_level)

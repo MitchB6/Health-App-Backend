@@ -9,11 +9,14 @@ from ..extensions import db
 
 
 def verify_coach_member_link(member_id):
-  query = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
-  coach_id = query.first()
-  print(coach_id)
-  link = CoachesMembersLink.query.filter_by(
-      coach_id=coach_id, member_id=member_id, status='approved').first()
+  query = CoachInfo.query.filter_by(member_id=get_jwt_identity())
+  coach = query.first()
+  if not coach:
+    return 404
+  else:
+    link = CoachesMembersLink.query.filter_by(
+        coach_id=coach.coach_id, member_id=member_id, status='approved').first()
+
   return link
 
 
@@ -79,12 +82,10 @@ def get_workouts_by_member(member_id):
 
   if link:
     """Get all workouts for a specific member"""
-    print('approved\n'*5)
     workouts = Workout.query.filter_by(member_id=member_id)
     response, status_code = [
         workout.serialize() for workout in workouts], 200
   else:
-    print('unapproved\n'*5)
     response, status_code = {'message': 'Access denied'}, 404
 
   return response, status_code
@@ -94,25 +95,44 @@ def create_workout_for_member(member_id, data):
   """Create a new workout for a specific member"""
   link = verify_coach_member_link(member_id)
 
-  if link:
+  if link != 404:
     new_workout = Workout(
         workout_name=data.get('workout_name'),
         member_id=member_id
     )
     new_workout.save()
-    response, status_code = {"message": "Workout created successfully"}, 201
+    response, status_code = {
+        "message": f"Workout created successfully {new_workout.workout_id}"}, 201
   else:
     response, status_code = {'message': 'Access denied'}, 404
 
   return response, status_code
 
 
-def update_workout_for_member(member_id, data):
+def get_workout_for_member(member_id, workout_id):
+  """Get a specific workout for a specific member"""
+  link = verify_coach_member_link(member_id)
+
+  if link != 404:
+    workout = Workout.query.filter_by(
+        member_id=member_id, workout_id=workout_id).first()
+    if workout:
+      response, status_code = workout.serialize(), 200
+    else:
+      response, status_code = {"message": "Workout not found"}, 404
+  else:
+    response, status_code = {'message': 'Access denied'}, 404
+
+  return response, status_code
+
+
+def update_workout_for_member(data, member_id, workout_id):
   """Update an existing workout for a specific member"""
   link = verify_coach_member_link(member_id)
 
-  if link:
-    workout = Workout.query.get_or_404(data.get('workout_id'))
+  if link != 404:
+    workout = Workout.query.filter_by(
+        member_id=member_id, workout_id=workout_id).first()
     workout.workout_name = data.get('workout_name', workout.workout_name)
     workout.save()
     response, status_code = {"message": "Workout updated successfully"}, 200
@@ -126,7 +146,7 @@ def delete_workout_for_member(member_id, workout_id):
   """Delete an existing workout from a member"""
   link = verify_coach_member_link(member_id)
 
-  if link:
+  if link != 404:
     workout = Workout.query.get_or_404(workout_id)
     workout.delete()
     response, status_code = {"message": "Workout deleted successfully"}, 200
@@ -152,7 +172,6 @@ def add_exercise_to_workout(workout_id, data):
       exercise_id=data.get('exercise_id'),
       sets=data.get('sets'),
       reps=data.get('reps'),
-      sequence=data.get('sequence'),
       notes=data.get('notes')
   )
   new_workout_exercise.save()
@@ -167,7 +186,6 @@ def update_exercise_in_workout(workout_exercise_id, data):
   if exercise:
     exercise.sets = data.get('sets')
     exercise.reps = data.get('reps')
-    exercise.sequence = data.get('sequence')
     exercise.notes = data.get('notes')
     exercise.save()
     return {"message": "Exercise updated successfully"}, 200

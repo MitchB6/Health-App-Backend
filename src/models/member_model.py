@@ -28,11 +28,7 @@ class Member(db.Model):
       'WorkoutPlan', back_populates='member', cascade='all, delete-orphan')
   surveys = db.relationship(
       'Survey', back_populates='member', cascade='all, delete-orphan')
-  sent = db.relationship(
-      'Chats', back_populates='member')
-  got = db.relationship(
-      'Chats', back_populates='member')
-  
+
   def delete(self):
     """ Permanently delete the member """
     db.session.delete(self)

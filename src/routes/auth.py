@@ -69,7 +69,10 @@ class SignUp(Resource):
       409: 'Email already exists'
   })
   def post(self):
-    """User signup with email and password"""
+    """
+    User signup with email and password
+    GOOD
+    """
     data = request.get_json()
     result, status_code = create_user(data)
     return make_response(jsonify(result), status_code)
@@ -85,7 +88,10 @@ class CoachSignUp(Resource):
   @jwt_required(optional=True)
   @auth_ns.expect(coach_signup_model)
   def post(self):
-    """Coach form submission"""
+    """
+    Coach form submission
+    GOOD
+    """
     data = request.get_json()
 
     if not data.get('member_id'):
@@ -110,36 +116,42 @@ class Login(Resource):
       }
   )
   def post(self):
-    """User login using email and password"""
+    """
+    User login using email and password
+    GOOD
+    """
     data = request.get_json()
     result, status_code = login_user(data)
     return make_response(jsonify(result), status_code)
 
+
 @auth_ns.route('/chat')
 class Chat(Resource):
-#   @auth_ns.expect(chat_model)
-#   @auth_ns.doc(
-#       responses={
-#           200: 'Success',
-#           400: 'Missing required fields',
-#           401: 'Invalid credentials',
-#           409: 'User does not exist'
-#       }
-#   )
+  #   @auth_ns.expect(chat_model)
+  #   @auth_ns.doc(
+  #       responses={
+  #           200: 'Success',
+  #           400: 'Missing required fields',
+  #           401: 'Invalid credentials',
+  #           409: 'User does not exist'
+  #       }
+  #   )
   def post(self):
-#     """Send chat with username and recepent username"""
-#     data = request.get_json()
-#     result, status_code = login_user(data)
-#    return make_response(jsonify(result), status_code)
-        print("just checkin")
-        emit('connect')
-        return jsonify({"message":"this really worked????"})
+    #     """Send chat with username and recepent username"""
+    #     data = request.get_json()
+    #     result, status_code = login_user(data)
+    #    return make_response(jsonify(result), status_code)
+    print("just checkin")
+    emit('connect')
+    return jsonify({"message": "this really worked????"})
+
 
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected \n')
-    print('Client connected \n')
-    print('Client connected \n')
+  print('Client connected \n')
+  print('Client connected \n')
+  print('Client connected \n')
+
 
 @auth_ns.route('/refresh')
 class RefreshResource(Resource):
@@ -150,7 +162,10 @@ class RefreshResource(Resource):
   @auth_ns.expect(security='Bearer Auth')
   @jwt_required(refresh=True)
   def post(self):
-    """User gets new access token with refresh token"""
+    """
+    User gets new access token with refresh token
+    GOOD
+    """
     result, status_code = refresh_access_token()
     return make_response(jsonify(result), status_code)
 
@@ -164,7 +179,10 @@ class ChangePasswordResource(Resource):
   })
   @jwt_required()
   def post(self):
-    """User change their password"""
+    """
+    User change their password
+    GOOD
+    """
     data = request.get_json()
 
     result, status_code = change_password(data)

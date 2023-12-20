@@ -13,8 +13,6 @@ class WorkoutPlanLink(db.Model):
       'workout_plans.plan_id', ondelete='CASCADE'), nullable=False)
   workout_id = db.Column(db.Integer, db.ForeignKey(
       'workouts.workout_id'), nullable=False)
-  sequence = db.Column(db.Integer, nullable=False)
-
   workout_plan = db.relationship(
       'WorkoutPlan', back_populates='workout_plan_links')
   workout = db.relationship('Workout', back_populates='workout_plan_links')
@@ -25,7 +23,6 @@ class WorkoutPlanLink(db.Model):
         'link_id': self.link_id,
         'plan_id': self.plan_id,
         'workout_id': self.workout_id,
-        'sequence': self.sequence
     }
 
   def serialize_workout_in_plan(self):
@@ -35,7 +32,6 @@ class WorkoutPlanLink(db.Model):
         "link_id": self.link_id,
         "plan_id": self.plan_id,
         "workout_id": self.workout_id,
-        "sequence": self.sequence,
         'workout_name': workout_info.workout_name,
         'created_at': workout_info.created_at,
         'last_modified': workout_info.last_modified,

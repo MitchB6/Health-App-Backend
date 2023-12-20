@@ -7,6 +7,12 @@ from ..services.coach_services import *
 
 coach_ns = Namespace('coaches', description="A namespace for coaches")
 
+specializations = ['Weight Loss', 'Weight Gain', 'Body Building',
+                   'General Fitness', 'Yoga', 'Pilates', 'Crossfit',]
+schedules = ['Weekdays', 'Weekends', 'Weekdays and Weekends']
+qualifications = ['ACE', 'ACSM', 'NASM', 'ISSA', 'NSCA', 'NCSF',
+                  'NCCPT', 'NESTA', 'NCSM', 'NFPT', 'Cooper Institute', 'Other']
+
 hire_request_model = coach_ns.model('HireRequest', {
     'member_id': fields.Integer(required=True, description='Client ID'),
     'coach_id': fields.Integer(required=True, description='Coach ID'),
@@ -20,7 +26,10 @@ class AllCoaches(Resource):
                         'price': 'Price of coach',
                         'location': 'Location of coach'})
   def get(self):
-    """Get all coaches."""
+    """
+    Get all coaches.
+    GOOD
+    """
     specialization = request.args.get('specialization', None)
     price = request.args.get('price', None)
     location = request.args.get('location', None)
@@ -32,6 +41,9 @@ class AllCoaches(Resource):
 class HireRequestResource(Resource):
   @jwt_required()
   def post(self, coach_id):
-    """Request to hire a coach."""
+    """
+    Request to hire a coach.
+    GOOD
+    """
     result, status_code = link_request(coach_id)
     return make_response(jsonify(result), status_code)

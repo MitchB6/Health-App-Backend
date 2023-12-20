@@ -46,5 +46,6 @@ def link_request(coach_id):
     new_link = CoachesMembersLink(coach_id=coach.coach_id, member_id=member_id)
     db.session.add(new_link)
     db.session.commit()
-
+  else:
+    return {'message': 'Hire request already submitted'}, 400
   return {'message': 'Hire request submitted successfully'}, 201

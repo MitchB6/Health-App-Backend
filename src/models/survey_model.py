@@ -8,7 +8,6 @@ class Survey(db.Model):
   survey_id = db.Column(db.Integer, primary_key=True)
   member_id = db.Column(db.Integer, db.ForeignKey(
       'members.member_id', ondelete='CASCADE'), nullable=False)
-  date = db.Column(db.DateTime, nullable=False)
   energy_level = db.Column(db.Integer)
   mood_level = db.Column(db.Integer)
   hydration_level = db.Column(db.Float)
@@ -23,7 +22,6 @@ class Survey(db.Model):
         'survey_id': self.survey_id,
         'member_id': self.member_id,
         'date': self.date,
-        'energy_level': self.energy_level,
         'mood_level': self.mood_level,
         'hydration_level': self.hydration_level,
         'calories_intake': self.calories_intake,

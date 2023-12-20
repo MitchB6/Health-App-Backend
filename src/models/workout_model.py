@@ -18,7 +18,7 @@ class Workout(db.Model):
 
   member = db.relationship('Member', back_populates='workouts')
   workout_plan_links = db.relationship(
-      'WorkoutPlanLink', back_populates='workout', order_by='WorkoutPlanLink.sequence')
+      'WorkoutPlanLink', back_populates='workout')
   workout_stats = db.relationship(
       'WorkoutStat', back_populates='workout', order_by='WorkoutStat.date')
   workout_exercises = db.relationship(
@@ -36,6 +36,7 @@ class Workout(db.Model):
   def save(self):
     """Save or update a workout."""
     db.session.add(self)
+    db.session.flush()
     db.session.commit()
 
   def delete(self):
