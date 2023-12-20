@@ -2,7 +2,7 @@ from flask_restx import Resource, Namespace, fields
 from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 
-from ..services.member_services import get_member_settings, update_member_settings, delete_member
+from ..services.member_services import get_member_settings, update_member_settings, delete_member,get_member_goals
 
 member_ns = Namespace('member', description='A namespace for Member')
 
