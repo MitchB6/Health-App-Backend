@@ -33,8 +33,8 @@ class WorkoutPlanLink(db.Model):
         "plan_id": self.plan_id,
         "workout_id": self.workout_id,
         'workout_name': workout_info.workout_name,
-        'created_at': workout_info.created_at,
-        'last_modified': workout_info.last_modified,
+        'created_at': workout_info.created_at.last_modified.strftime('%Y-%m-%d') if workout_info.created_at else None,
+        'last_modified': workout_info.last_modified.strftime('%Y-%m-%d') if workout_info.last_modified else None,
     }
 
   def save(self):

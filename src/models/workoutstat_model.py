@@ -23,7 +23,7 @@ class WorkoutStat(db.Model):
         'workout_id': self.workout_id,
         'duration': self.duration,
         'calories_burned': self.calories_burned,
-        'date': self.date
+        'date': self.date.strftime('%Y-%m-%d') if self.date else None
     }
 
   def save(self):

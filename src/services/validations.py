@@ -59,11 +59,11 @@ def validate_username(username):
 
 
 def validate_first_name(first_name):
-  return len(first_name) > 0
+  return len(first_name) >= 0
 
 
 def validate_last_name(last_name):
-  return len(last_name) > 0
+  return len(last_name) >= 0
 
 
 def validate_mood_level(mood_level):
