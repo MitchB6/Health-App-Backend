@@ -1,43 +1,25 @@
 from unittest.mock import patch
-from flask import Flask
-from src.services.client_services import get_all_clients
+from src.services.exercise_services import get_equipment
 
-def test_get_all_clients_success():
-    # Create a Flask app and set it as the current app in the context
-    app = Flask(__name__)
-    app.testing = True
-    with app.test_request_context():
-        # Mock get_jwt_identity
-        with patch('src.services.client_services.get_jwt_identity', return_value=123), \
-             patch('src.services.client_services.CoachInfo.query') as mock_coach_query, \
-             patch('src.services.client_services.CoachesMembersLink.query') as mock_link_query:
+def test_get_equipment_success():
+    # Mock the database query
+    with patch('src.services.exercise_services.db.session') as mock_session:
+        mock_query = mock_session.query.return_value
+        mock_query.distinct.return_value.all.return_value = [('Dumbbell',), ('Barbell',)]
 
-            # Mock the data for the test
-            mock_coach_query.return_value.filter_by.return_value.first.return_value = {
-                'coach_id': 1,
-                'member_id': 123
-                # Add other fields as needed
-            }
+        # Mock jsonify to check the output
+        with patch('src.services.exercise_services.jsonify', side_effect=lambda x: x) as mock_jsonify:
+            response, status_code = get_equipment()
 
-            mock_link_query.return_value.filter_by.return_value.all.return_value = [
-                {
-                    'client_id': 2,
-                    'coach_id': 1,
-                    'status': 'approved'
-                    # Add other fields as needed
-                }
-            ]
-
-            # Perform the test
-            response, status_code = get_all_clients()
-
-    # Add assertions based on the expected behavior of your function
     assert status_code == 200
-    assert response == [
-        {
-            'client_id': 2,
-            'coach_id': 1,
-            'status': 'approved'
-            # Add other fields as needed
-        }
-    ]
+    assert response == ['Dumbbell', 'Barbell']
+
+def test_get_equipment_exception():
+    # Mock the database query to simulate an exception
+    with patch('src.services.exercise_services.db.session') as mock_session:
+        mock_session.query.side_effect = Exception('Simulated database error')
+
+        response, status_code = get_equipment()
+
+    assert status_code == 500
+    assert response == {"message": "Simulated database error"}
