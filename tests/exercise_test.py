@@ -15,11 +15,13 @@ def test_get_equipment_success():
     assert response == ['Dumbbell', 'Barbell'] 
 
 
+#asdasdsa
+
 
 def test_get_equipment_exception():
     # Mock the database query to simulate an exception
     with patch('src.services.exercise_services.db.session') as mock_session:
-        mock_session.query.side_effect = Exception('Simulated datbase error')
+        mock_session.query.side_effect = Exception('Simulated database error')
 
         response, status_code = get_equipment()
 
