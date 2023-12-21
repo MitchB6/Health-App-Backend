@@ -15,8 +15,6 @@ def test_get_equipment_success():
     assert response == ['Dumbbell', 'Barbell'] 
 
 
-#asdasdsa
-
 
 def test_get_equipment_exception():
     # Mock the database query to simulate an exception
