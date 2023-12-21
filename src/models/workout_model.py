@@ -29,8 +29,8 @@ class Workout(db.Model):
         'workout_id': self.workout_id,
         'member_id': self.member_id,
         'workout_name': self.workout_name,
-        'created_at': self.created_at,
-        'last_modified': self.last_modified
+        'created_at': self.created_at.strftime('%Y-%m-%d') if self.created_at else None,
+        'last_modified': self.last_modified.strftime('%Y-%m-%d') if self.last_modified else None,
     }
 
   def save(self):

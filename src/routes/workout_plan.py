@@ -21,8 +21,7 @@ update_workoutplan_model = workoutplan_ns.model('Update Workout Plan', {
 })
 
 add_workout_to_plan_model = workoutplan_ns.model('AddWorkoutToPlan', {
-    'workout_id': fields.Integer(required=True, description='ID of the workout to add'),
-    'plan_name': fields.String(description='Workout Plan Name')
+    'workout_id': fields.Integer(required=True, description='ID of the workout to add')
 })
 
 

@@ -19,11 +19,11 @@ def validate_phone(phone):
 
 
 def validate_height(height):
-  return 50 <= height <= 300
+  return 50 <= int(height) <= 300
 
 
 def validate_weight(weight):
-  return 2 <= weight <= 500
+  return 2 <= int(weight) <= 500
 
 
 def validate_zip_code(zip_code):
@@ -59,11 +59,11 @@ def validate_username(username):
 
 
 def validate_first_name(first_name):
-  return len(first_name) > 0
+  return len(first_name) >= 0
 
 
 def validate_last_name(last_name):
-  return len(last_name) > 0
+  return len(last_name) >= 0
 
 
 def validate_mood_level(mood_level):
