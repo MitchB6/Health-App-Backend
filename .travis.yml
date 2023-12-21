@@ -17,12 +17,14 @@ script:
   - export FLASK_ENV=testing
   - export DATABASE_URL=mysql://travis@localhost/test_db
   - export SECRET_KEY=your_secret_key  # Set your secret key here
+  - export SQLALCHEMY_TRACK_MODIFICATIONS=True  # Set your SQLAlchemy track modifications configuration here
 
   - pytest tests/
 
 env:
   global:
     - DATABASE_URL=mysql://travis@localhost/test_db
+    - SQLALCHEMY_TRACK_MODIFICATIONS=True
 
 notifications:
   email: false
