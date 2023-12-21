@@ -12,12 +12,14 @@ def test_get_equipment_success():
             response, status_code = get_equipment()
 
     assert status_code == 200
-    assert response == ['Dumbbell', 'Barbell']
+    assert response == ['Dumbbell', 'Barbell'] 
+
+
 
 def test_get_equipment_exception():
     # Mock the database query to simulate an exception
     with patch('src.services.exercise_services.db.session') as mock_session:
-        mock_session.query.side_effect = Exception('Simulated database error')
+        mock_session.query.side_effect = Exception('Simulated datbase error')
 
         response, status_code = get_equipment()
 
