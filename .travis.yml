@@ -14,7 +14,14 @@ before_script:
   
 script:
   - source ~/virtualenv/python3.8/bin/activate
+  - export FLASK_ENV=testing
+  - export DATABASE_URL=mysql://travis@localhost/test_db
+  - export SECRET_KEY=your_secret_key  # Set your secret key here
+  - export SQLALCHEMY_TRACK_MODIFICATIONS=True  # Set your SQLAlchemy track modifications configuration here
+  - export MYSQL_DATABASE_URI=database-1.cza7wufaq8ub.us-east-1.rds.amazonaws.com  # Set your MySQL database URI here
+
   - pytest tests/
+
 
 env:
   global:
