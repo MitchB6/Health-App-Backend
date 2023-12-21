@@ -7,17 +7,28 @@ services:
 
 install:
   - pip install -r requirements.txt
-
+  
 before_script:
+  - ls -R tests
   - mysql -e 'CREATE DATABASE test_db;'
-
+  
 script:
-  - python -m unittest discover tests
+  - source ~/virtualenv/python3.8/bin/activate
+  - export FLASK_ENV=testing
+  - export DATABASE_URL=mysql://travis@localhost/test_db
+  - export SECRET_KEY=your_secret_key  # Set your secret key here
+  - export SQLALCHEMY_TRACK_MODIFICATIONS=True  # Set your SQLAlchemy track modifications configuration here
+  - export MYSQL_DATABASE_URI=mysql://admin:password@database-1.cza7wufaq8ub.us-east-1.rds.amazonaws.com:3306/fit_this  # Set your MySQL database URI here
+
+  - pytest tests/
+
 
 env:
   global:
     - FLASK_ENV=testing
-    - DATABASE_URL=mysql://travis@localhost/test_db
+    - DATABASE_URL=mysql://admin:password@database-1.cza7wufaq8ub.us-east-1.rds.amazonaws.com:3306/fit_this
+    - SQLALCHEMY_TRACK_MODIFICATIONS=False
+    - MYSQL_DATABASE_URI=mysql://admin:password@database-1.cza7wufaq8ub.us-east-1.rds.amazonaws.com:3306/fit_this
 
 notifications:
   email: false
