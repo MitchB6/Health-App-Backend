@@ -37,6 +37,25 @@ member_settings_model = member_ns.model(
     }
 )
 
+update_member_settings_model = member_ns.model(
+    "MemberSettings",
+    {
+        "email": fields.String(description="The email of the member"),
+        "first_name": fields.String(description="The first name of the member"),
+        "last_name": fields.String(description="The last name of the member"),
+        "username": fields.String(description="The username of the member"),
+        "phone": fields.String(description="The phone number of the member"),
+        "city": fields.String(description="The city of the member"),
+        "state": fields.String(description="The state of the member"),
+        "zip_code": fields.String(description="The zip code of the member"),
+        "birthdate": fields.Date(description="The birthdate of the member"),
+        "height": fields.Integer(description="The height of the member"),
+        "weight": fields.Integer(description="The weight of the member"),
+        "age": fields.Integer(description="The age of the member"),
+        "gender": fields.String(description="The gender of the member")
+    }
+)
+
 
 @member_ns.route('/settings')
 @member_ns.response(404, 'Member not found.')
@@ -50,7 +69,7 @@ class MemberSettingsResource(Resource):
     result, status_code = get_member_settings()
     return make_response(jsonify(result), status_code)
 
-  @member_ns.expect(member_settings_model)
+  @member_ns.expect(update_member_settings_model)
   @jwt_required()
   def put(self):
     """

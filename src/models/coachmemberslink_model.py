@@ -20,10 +20,14 @@ class CoachesMembersLink(db.Model):
   ), onupdate=db.func.current_date())
 
   def serialize(self):
+    client_info = PersonalInfo.query.filter_by(
+        member_id=self.member_id).first()
     return {
         "link_id": self.link_id,
         "coach_id": self.coach_id,
         "member_id": self.member_id,
+        "first_name": client_info.first_name if client_info else None,
+        "last_name": client_info.last_name if client_info else None,
         "status": self.status,
         "last_updated": self.last_updated.strftime('%Y-%m-%d') if self.last_updated else None,
     }

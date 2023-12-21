@@ -4,6 +4,7 @@ from ..models.survey_model import Survey
 from ..models.coachmemberslink_model import CoachesMembersLink
 from ..models.coach_model import CoachInfo
 from ..models.workout_model import Workout
+from ..models.personalinfo_model import PersonalInfo
 
 from ..extensions import db
 
@@ -12,7 +13,10 @@ def get_all_clients():
   coach = CoachInfo.query.filter_by(member_id=get_jwt_identity()).first()
   if not coach:
     return {'message': 'Not a coach or coach not found'}, 404
-
+  clients = db.session.query(CoachesMembersLink, PersonalInfo). \
+      filter(CoachesMembersLink.coach_id == coach.coach_id). \
+      filter(CoachesMembersLink.member_id == PersonalInfo.member_id). \
+      filter(CoachesMembersLink.status == 'approved').all()
   clients = CoachesMembersLink.query.filter_by(
       coach_id=coach.coach_id, status="approved").all()
 
@@ -31,7 +35,6 @@ def get_client_requests():
 
     requests = CoachesMembersLink.query.filter_by(
         coach_id=coach.coach_id, status="pending").all()
-
     serialized_requests = [request.serialize() for request in requests]
     return serialized_requests, 200
   except Exception as e:
