@@ -1,12 +1,8 @@
 import pytest
 import json
-from unittest.mock import patch
 from flask_jwt_extended import create_access_token
-
-# Assuming your Flask app creation is in a function `create_app`
 from src import create_app
 from config import TestConfig
-
 
 @pytest.fixture(scope='module')
 def app():
@@ -16,21 +12,17 @@ def app():
     yield _app
     ctx.pop()
 
-
 @pytest.fixture
 def client(app):
     return app.test_client()
 
-
 @pytest.fixture
-def admin_token(app):
+def admin_token(app, mocker):
     # Mock JWT token creation
     with app.app_context():
         additional_claims = {"role_id": 2}
         return create_access_token(identity="admin_user", additional_claims=additional_claims)
 
-
-@pytest.mark.usefixtures("mocker")
 def test_get_all_coach_forms(client, admin_token, mocker):
     # Mock the get_all_coach_forms service
     mocker.patch(
@@ -46,8 +38,6 @@ def test_get_all_coach_forms(client, admin_token, mocker):
     assert response.status_code == 200
     assert b"Success" in response.data
 
-
-@pytest.mark.usefixtures("mocker")
 def test_approve_coach_form(client, admin_token, mocker):
     # Mock the update_coach service
     mocker.patch(
