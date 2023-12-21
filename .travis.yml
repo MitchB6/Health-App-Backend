@@ -7,18 +7,21 @@ services:
 
 install:
   - pip install -r requirements.txt
-  
+
 before_script:
   - ls -R tests
   - mysql -e 'CREATE DATABASE test_db;'
-  
+
 script:
   - source ~/virtualenv/python3.8/bin/activate
+  - export FLASK_ENV=testing
+  - export DATABASE_URL=mysql://travis@localhost/test_db
+  - export SECRET_KEY=your_secret_key  # Set your secret key here
+
   - pytest tests/
 
 env:
   global:
-    - FLASK_ENV=testing
     - DATABASE_URL=mysql://travis@localhost/test_db
 
 notifications:

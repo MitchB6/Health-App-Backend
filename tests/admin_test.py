@@ -5,12 +5,12 @@ from flask_jwt_extended import create_access_token
 
 # Assuming your Flask app creation is in a function `create_app`
 from src import create_app
-from config import DevConfig
+from config import TestConfig
 
 
 @pytest.fixture(scope='module')
 def app():
-  _app = create_app(DevConfig)
+  _app = create_app(TestConfig)
   ctx = _app.app_context()
   ctx.push()
   yield _app
