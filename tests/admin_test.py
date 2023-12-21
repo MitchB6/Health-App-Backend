@@ -23,8 +23,7 @@ def admin_token(app, mocker):
         additional_claims = {"role_id": 2}
         return create_access_token(identity="admin_user", additional_claims=additional_claims)
 
-@pytest.mark.usefixtures("mocker")  # Add this line to use the mocker fixture
-def test_get_all_coach_forms(client, admin_token):
+def test_get_all_coach_forms(client, admin_token, mocker):
     # Mock the get_all_coach_forms service
     mocker.patch(
         'src.routes.admin.get_all_coach_forms',
@@ -39,8 +38,7 @@ def test_get_all_coach_forms(client, admin_token):
     assert response.status_code == 200
     assert b"Success" in response.data
 
-@pytest.mark.usefixtures("mocker")  # Add this line to use the mocker fixture
-def test_approve_coach_form(client, admin_token):
+def test_approve_coach_form(client, admin_token, mocker):
     # Mock the update_coach service
     mocker.patch(
         'src.routes.admin.update_coach',
